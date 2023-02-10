@@ -1,10 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import axios from 'axios';
+import { apiGet } from './api';
 
-const API_URL = "https://appapi.bots.business/v1/";
-let apiKey = "";
 var vsContext: vscode.ExtensionContext;
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
@@ -23,25 +21,13 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
     }
 
 		const bot = element.bot;
-		const apiKey = getApiKey();
 
-		const url = API_URL + `bots/${bot.id}/commands_folders?api_key=${apiKey}`;
-		console.log(`Loading bot folders from url ${url}`);
-	
-		try {
-			const response = await axios.get(url);
+		const path = `bots/${bot.id}/commands_folders`;
+		const folders = await apiGet(path);
+		if(!folders){ return []; }
 
-			const folders = response.data;
-	
-			console.log(folders);
-
-			// add folders as children to the selected bot node
-			element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
-
-			return element.children.map((item) => item as BotNode);
-		} catch (error) {
-			vscode.window.showErrorMessage(`Failed to load bot folders from url ${url}`);
-		}
+		// add folders as children to the selected bot node
+		element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
 
 		return element.children.map((item) => item as BotNode);
   }
@@ -129,30 +115,23 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 async function saveAndCheckApiKey(apiKey:any) {
-	if(!apiKey){
-		vscode.window.showInformationMessage('BB Api key not saved');
-		return false;
-	}
-	vscode.workspace.getConfiguration().update('BotsBusiness.apiKey', apiKey, vscode.ConfigurationTarget.Global);
+	vscode.workspace.getConfiguration().update(
+		'BotsBusiness.apiKey', apiKey, 
+		vscode.ConfigurationTarget.Global
+	);
 
-	try {
-		const response = await axios.get(API_URL + `user/unsecure?api_key=${apiKey}`);
-		const email = response.data.email;
-		if (email) {
-			vscode.window.showInformationMessage(`Success! Logged to BB account: ${email}`);
-			vscode.workspace.getConfiguration().update(
-				'BotsBusiness.email', email, vscode.ConfigurationTarget.Global
-			);
-			buildBBTree();
-		}
-	} catch (error) {
-		vscode.window.showErrorMessage(`Failed. Please check your BB Api key`);
+	const response = await apiGet("user/unsecure");
+	if(response&&response.email){
+		const email = response.email;
+		vscode.window.showInformationMessage(`Success! Logged to BB account: ${email}`);
+		vscode.workspace.getConfiguration().update(
+			'BotsBusiness.email', email, vscode.ConfigurationTarget.Global
+		);
+		buildBBTree();
+		return;
 	}
-}
 
-function getApiKey(){
-	return apiKey;
-	return vscode.workspace.getConfiguration().get('BotsBusiness.apiKey');
+	vscode.window.showErrorMessage(`Failed. Please check your BB Api key`);
 }
 
 function getEmail(){
@@ -161,10 +140,8 @@ function getEmail(){
 }
 
 async function buildBBTree() {
-	const apiKey = getApiKey();
-	if(!apiKey){ return; }
-	const response = await axios.get(API_URL + `bots?api_key=${apiKey}`);
-	const bots = response.data;
+	const bots = await apiGet("bots");
+	if(!bots){ return; }
 	createBotTreeView(bots);
 }
 
