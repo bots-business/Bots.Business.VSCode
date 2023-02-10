@@ -17,20 +17,10 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 		return element;
 	}
 
-	__getChildren(element?: BotNode): Thenable<BotNode[]> {
-		if (!element) {
-			const botNodes = this.bots.map((bot) => new BotNode(bot));
-			return Promise.resolve(botNodes);
-		}
-		return Promise.resolve([]);
-	}
-
 	async getChildren(element?: BotNode|undefined) {
     if (element === undefined) {
 			return this.bots.map((bot) => new BotNode(bot));
     }
-
-
 
 		const bot = element.bot;
 		const apiKey = getApiKey();
@@ -49,12 +39,9 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 			element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
 
 			return element.children.map((item) => item as BotNode);
-
 		} catch (error) {
 			vscode.window.showErrorMessage(`Failed to load bot folders from url ${url}`);
 		}
-
-
 
 		return element.children.map((item) => item as BotNode);
   }
@@ -94,7 +81,7 @@ function createBotTreeView(bots: any[]) {
 
   // on click event
 	tree.onDidChangeSelection(e => {
-		loadBotFolders(tree, e.selection[0]);
+		console.log(e);
 	});
 	tree.onDidCollapseElement(e => {
 		console.log(e);
@@ -110,36 +97,9 @@ function createBotTreeView(bots: any[]) {
 	vsContext.subscriptions.push(tree);
 }
 
-function loadBotFolders(tree: any, element: any) {
-	return
-
-	if(!(element instanceof BotNode)) { return; }
-	const bot = element.bot;
-	const apiKey = getApiKey();
-	console.log(element);
-	const url = API_URL + `bots/${bot.id}/commands_folders?api_key=${apiKey}`;
-	console.log(`Loading bot folders from url ${url}`);
-
-
-	try {
-		axios.get(url).then((response) => {
-			const folders = response.data;
-
-			console.log(folders);
-
-			// add folders as children to the selected bot node
-			element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
-			// refresh the tree view to show the newly added children
-			tree.reveal(element);
-		});
-	} catch (error) {
-		vscode.window.showErrorMessage(`Failed to load bot folders from url ${url}`);
-	}
-}
-
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	vsContext = context;
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -165,7 +125,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(loginCmd);
 
-	buildBBTree();
+	await buildBBTree();
 }
 
 async function saveAndCheckApiKey(apiKey:any) {
