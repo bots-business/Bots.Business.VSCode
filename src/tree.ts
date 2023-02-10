@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 import { apiGet } from './api';
+import * as path from 'path';
+import * as os from 'os';
+import * as fs from 'fs';
+import { saveCommandToFile } from './bbfolder';
 
 export function getBBTreeView(bots: any[]) {
 	const botTreeDataProvider = new BotTreeDataProvider(bots);
@@ -8,7 +12,9 @@ export function getBBTreeView(bots: any[]) {
 
   // on click event
 	tree.onDidChangeSelection(e => {
-		console.log(e);
+		if(e.selection[0] instanceof CommandTreeItem ){
+			loadCode(e.selection[0].bbCommand);
+		}
 	});
 	tree.onDidCollapseElement(e => {
 		console.log(e);
@@ -22,6 +28,33 @@ export function getBBTreeView(bots: any[]) {
 
   return tree;
 }
+
+async function __loadCode(command: any){
+	const edit = new vscode.WorkspaceEdit();
+	let uri = vscode.Uri.parse(`untitled:${command.command}`);
+	edit.insert(uri, new vscode.Position(0, 0), command.code);
+	let success = await vscode.workspace.applyEdit(edit);
+	vscode.window.showTextDocument(uri);
+
+	vscode.workspace.onDidCloseTextDocument(e => {
+		if(e.uri === uri){
+			console.log('closed');
+		}
+	});
+}
+
+async function loadCode(command: any){
+	let cmdFile = saveCommandToFile(command);
+
+	let uri = vscode.Uri.file(cmdFile);
+	let document = await vscode.workspace.openTextDocument(uri, );
+	let success = await vscode.window.showTextDocument(document, {preview: true});
+	if (!success) {
+		vscode.window.showErrorMessage(`Error opening file: ${cmdFile}`);
+		return;
+	}
+}
+
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BotNode | undefined> = new vscode.EventEmitter<BotNode | undefined>();
@@ -105,7 +138,7 @@ class FolderTreeItem extends vscode.TreeItem {
 }
 
 class CommandTreeItem extends vscode.TreeItem {
-  constructor(private bbCommand: any, public parent: vscode.TreeItem ) {
+  constructor(public bbCommand: any, public parent: vscode.TreeItem ) {
     super(bbCommand.command);
     this.tooltip = 
 			"📃 " + ( bbCommand.answer || "no") + 
