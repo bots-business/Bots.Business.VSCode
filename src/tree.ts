@@ -33,21 +33,40 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 		return element;
 	}
 
+  async getItemsForBotElement(element: BotNode){
+    const bot = element.bot;
+    
+    let folders = (await apiGet(`bots/${bot.id}/commands_folders`)) || [];
+		const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
+
+    folders.forEach((folder: any) => {
+      folder.children = commands.filter((command: any) => command.commands_folder_id === folder.id);
+    });
+
+		// add folders as children to the selected bot node
+		element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
+
+		commands.forEach((command: any) => {
+			if(command.commands_folder_id === null){
+				element.children.push(new CommandTreeItem(command, element));
+			}
+		});
+
+		return element.children.map((item) => item as BotNode);
+  }
+
 	async getChildren(element?: BotNode|undefined) {
     if (element === undefined) {
 			return this.bots.map((bot) => new BotNode(bot));
     }
 
-		const bot = element.bot;
+		if(element instanceof FolderTreeItem){
+			return element.children.map((item) => item as BotNode);
+		}
 
-		const path = `bots/${bot.id}/commands_folders`;
-		const folders = await apiGet(path);
-		if(!folders){ return []; }
-
-		// add folders as children to the selected bot node
-		element.children = folders.map((folder:any) => new FolderTreeItem(folder, element));
-
-		return element.children.map((item) => item as BotNode);
+    if(element instanceof BotNode){
+      return this.getItemsForBotElement(element);
+    }
   }
 
 	getParent(element: BotNode): BotNode | null {
@@ -60,6 +79,8 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 }
 
 class BotNode extends vscode.TreeItem {
+  // folders are children of bots
+  // TODO: libs, chats, props will be children of bots later
 	public children: vscode.TreeItem[] = [];
 
 	constructor(public bot: any) {
@@ -71,9 +92,26 @@ class BotNode extends vscode.TreeItem {
 }
 
 class FolderTreeItem extends vscode.TreeItem {
+  // commands are children of folders
+  public children: vscode.TreeItem[] = [];
+
 	constructor(private folder: any, public parent: BotNode) {
 		super(folder.title);
 		this.tooltip = folder.title;
 		this.contextValue = 'folder';
+    this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+    this.children = folder.children.map((command: any) => new CommandTreeItem(command, this));
 	}
+}
+
+class CommandTreeItem extends vscode.TreeItem {
+  constructor(private bbCommand: any, public parent: vscode.TreeItem ) {
+    super(bbCommand.command);
+    this.tooltip = 
+			"📃 " + ( bbCommand.answer || "no") + 
+			"\n⌨️ " + ( bbCommand.keyboard || "no") +
+			"\n❓" + ( bbCommand.need_reply || "no") +
+			"\n⏱️ " + ( bbCommand.auto_retry_time || "no");
+    this.contextValue = 'command';
+  }
 }
