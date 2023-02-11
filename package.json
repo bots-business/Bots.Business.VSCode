@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/bots-business/Bots.Business.VSCode"
   },
+  "publisher": "Bots.Business",
   "engines": {
     "vscode": "^1.75.0"
   },
