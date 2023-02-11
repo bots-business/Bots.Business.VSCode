@@ -35,6 +35,8 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 Initial release of Bots.Business Extension
 
+## Make your own Github PR!
+See: https://github.com/bots-business/Bots.Business.VSCode
 
 ## For more information
 
