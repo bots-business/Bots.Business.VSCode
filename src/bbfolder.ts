@@ -51,3 +51,7 @@ export function extractCommandIDFromFileName(fileName: string){
   let parts = fileName.split('/');
   return parts[parts.length - 2];
 }
+
+export function isBotFolder(folderPath: string){
+  return folderPath.indexOf(getBBFolder()) === 0;
+}

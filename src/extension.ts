@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { apiGet, apiPost, apiPut } from './api';
 import { getBBTreeView } from './tree';
-import { extractBotIDFromFileName, extractCommandIDFromFileName, initBBFolder } from './bbfolder';
+import { extractBotIDFromFileName, extractCommandIDFromFileName, initBBFolder, isBotFolder } from './bbfolder';
 
 var vsContext: vscode.ExtensionContext;
 
@@ -47,8 +47,12 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
+	if(!isBotFolder(textDoc.fileName)){ return; }
+
 	const commandID = extractCommandIDFromFileName(textDoc.fileName);
 	const botID = extractBotIDFromFileName(textDoc.fileName);
+
+	if(!commandID||!botID){ return; }
 	const code = textDoc.getText();
 
 	const response = await apiPut(`bots/${botID}/commands/${commandID}/code`, {code});
