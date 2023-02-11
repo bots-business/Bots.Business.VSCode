@@ -9,7 +9,7 @@ Use this extension for quickly bot development with Bots.Business!
 > Tip: you can load code for any commands and edit it!
 
 ## Instalattion
-1. Download VSIX file: 
+1. Download VSIX file: https://github.com/bots-business/Bots.Business.VSCode/blob/main/bots-business.vsix
 2. from VSCode's main menu, select “Extensions”
 3. click to open the three-dot menu at the top of the middle panel (see screenshot)
 4. select “Install from VSIX…” and follow the prompts.
