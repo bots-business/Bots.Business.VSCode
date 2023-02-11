@@ -27,7 +27,7 @@ export function initBotFolder(botID: number){
 
 export function saveCommandToFile(command: any){
   initBotFolder(command.bot_id);
-  let filePath = `${getBotFolder(command.bot_id)}/${command.command}.${command.id}.js`;
+  let filePath = `${getBotFolder(command.bot_id)}/${command.id}/${command.command}.js`;
   if (!fs.existsSync(filePath)){
     fs.writeFileSync(filePath, command.code);
   }
@@ -36,11 +36,10 @@ export function saveCommandToFile(command: any){
 
 export function extractBotIDFromFileName(fileName: string){
   let parts = fileName.split('/');
-  let botFolder = parts[parts.length - 2];
-  return botFolder.split('_')[1];
+  return parts[parts.length - 2];;
 }
 
 export function extractCommandIDFromFileName(fileName: string){
-  let parts = fileName.split('.');
-  return parts[parts.length - 2];
+  let parts = fileName.split('/');
+  return parts[parts.length - 3];;
 }
