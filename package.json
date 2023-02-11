@@ -41,12 +41,13 @@
         "title": "Bots.Business",
         "properties": {
           "bots-business.apiKey": {
-            "type": "string",
+            "type": "password",
             "default": "",
             "description": "Bots.Business API Key"
           }
         }
-      },
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

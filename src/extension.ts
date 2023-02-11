@@ -53,6 +53,7 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 	const botID = extractBotIDFromFileName(textDoc.fileName);
 
 	if(!commandID||!botID){ return; }
+
 	const code = textDoc.getText();
 
 	const response = await apiPut(`bots/${botID}/commands/${commandID}/code`, {code});
@@ -65,7 +66,7 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 
 async function saveAndCheckApiKey(apiKey:any) {
 	vscode.workspace.getConfiguration().update(
-		'BotsBusiness.apiKey', apiKey, 
+		'bots-business.apiKey', apiKey, 
 		vscode.ConfigurationTarget.Global
 	);
 

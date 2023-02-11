@@ -3,11 +3,8 @@ import axios from 'axios';
 
 const API_URL = "https://appapi.bots.business/v1/";
 
-let apiKey = "";
-
 function getApiKey(){
-	return apiKey;
-	return vscode.workspace.getConfiguration().get('BotsBusiness.apiKey');
+	return vscode.workspace.getConfiguration().get('bots-business.apiKey');
 }
 
 function getUrl(path: string){
