@@ -34,6 +34,11 @@ Initial release of Bots.Business Extension
 ## Make your own Github PR!
 See: https://github.com/bots-business/Bots.Business.VSCode
 
+Just make clone:
+`git@github.com:bots-business/Bots.Business.VSCode.git`
+
+then press F5 for debugging
+
 ## For more information
 
 * [Bots.Business - create your own bot](https://bots.business)
