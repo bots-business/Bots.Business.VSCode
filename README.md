@@ -8,7 +8,7 @@ Describe specific features of your extension including screenshots of your exten
 
 For example if there is an image subfolder under your extension project workspace:
 
-\!\[BB Bots List\]\(images/main.png\)
+\!\[BB Bots List\]\(/images/main.png\)
 
 > Tip: you can load code for any commands and edit it!
 
