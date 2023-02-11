@@ -27,19 +27,26 @@ const methods = {
   put: axios.put
 };
 
+function checkResponse(response: any, url: string){
+  if(response.status === 200){ return true; }
+  const message = `Bots.Business: failed to make request to url ${url}`;
+  vscode.window.showErrorMessage(message);
+  console.error(message);
+  return false;
+}
+
 export async function apiRequest(method: keyof typeof methods, path: string, data?: any) {
   const url = getUrl(path);
   if (!url) {return false;}
   try {
     const response = await methods[method](url, data);
-    if(response.status !== 200){
-      vscode.window.showErrorMessage(`Bots.Business: failed to make request to url ${url}`);
-      return false;
-    }
+    if(!checkResponse(response, url)){ return false; }
 
     return response.data;
   } catch (error) {
-    vscode.window.showErrorMessage(`Bots.Business: failed to ${method} from url ${url}`);
+    const message = `Bots.Business: failed to ${method}. Url ${url}`;
+    console.error(message);
+    vscode.window.showErrorMessage(message);
   }
   return false;
 }
