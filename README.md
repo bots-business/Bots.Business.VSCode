@@ -4,9 +4,17 @@ Use this extension for quickly bot development with Bots.Business!
 
 ## Features
 
-![BB Bots List in VS Code](/images/main.png)
+![BB Bots List in VS Code](https://github.com/bots-business/Bots.Business.VSCode/blob/main/images/main.png)
 
 > Tip: you can load code for any commands and edit it!
+
+## Instalattion
+1. Download VSIX file: 
+2. from VSCode's main menu, select “Extensions”
+3. click to open the three-dot menu at the top of the middle panel (see screenshot)
+4. select “Install from VSIX…” and follow the prompts.
+
+![Install from VSIX](https://i.stack.imgur.com/nPF49.png)
 
 ## Requirements
 
@@ -38,6 +46,11 @@ Just make clone:
 `git@github.com:bots-business/Bots.Business.VSCode.git`
 
 then press F5 for debugging
+
+### Publishing
+
+See:
+https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 
 ## For more information
 
