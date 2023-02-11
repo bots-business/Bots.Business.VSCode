@@ -54,6 +54,8 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 	const response = await apiPut(`bots/${botID}/commands/${commandID}/code`, {code});
 	if(response){
 		vscode.window.showInformationMessage(`Code saved to BB`);
+	}else{
+		vscode.window.showErrorMessage(`Failed to save code to BB`);
 	}
 }
 

@@ -5,12 +5,13 @@ export function getBBFolder() {
   return `${os.tmpdir()}/Bots.Business`;
 }
 
+function createDirIfNotExists(dirPath: string) {
+  if (fs.existsSync(dirPath)) { return; }
+  fs.mkdirSync(dirPath);
+}
+
 export function initBBFolder(){
-	let folderPath = getBBFolder();
-	// make folder if not exist
-	if (!fs.existsSync(folderPath)){
-		fs.mkdirSync(folderPath);
-	}
+  createDirIfNotExists(getBBFolder());
 }
 
 function getBotFolder(botID: number){
@@ -18,28 +19,35 @@ function getBotFolder(botID: number){
 }
 
 export function initBotFolder(botID: number){
-  let folderPath = getBotFolder(botID);
-  // make folder if not exist
-  if (!fs.existsSync(folderPath)){
-    fs.mkdirSync(folderPath);
-  }
+  createDirIfNotExists(getBBFolder());
+}
+
+function initCommandFolder(botID: number, commandID: number){
+  const botFolder = getBotFolder(botID);
+  createDirIfNotExists(botFolder);
+  const commandFolder = `${botFolder}/${commandID}`;
+  createDirIfNotExists(commandFolder);
+  return commandFolder;
 }
 
 export function saveCommandToFile(command: any){
   initBotFolder(command.bot_id);
-  let filePath = `${getBotFolder(command.bot_id)}/${command.id}/${command.command}.js`;
-  if (!fs.existsSync(filePath)){
-    fs.writeFileSync(filePath, command.code);
-  }
+  let fileName = command.command;
+  // escape file name
+  fileName = fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  fileName = `${fileName}.js`;
+  let commandFolder = initCommandFolder(command.bot_id, command.id);
+  let filePath = `${commandFolder}/${fileName}`;
+  fs.writeFileSync(filePath, command.code, {encoding: 'utf8', flag: 'w'});
   return filePath;
 }
 
 export function extractBotIDFromFileName(fileName: string){
   let parts = fileName.split('/');
-  return parts[parts.length - 2];;
+  return parts[parts.length - 3].split("bot_")[1];
 }
 
 export function extractCommandIDFromFileName(fileName: string){
   let parts = fileName.split('/');
-  return parts[parts.length - 3];;
+  return parts[parts.length - 2];
 }

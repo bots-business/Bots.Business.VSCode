@@ -13,7 +13,7 @@ export function getBBTreeView(bots: any[]) {
   // on click event
 	tree.onDidChangeSelection(e => {
 		if(e.selection[0] instanceof CommandTreeItem ){
-			loadCode(e.selection[0].bbCommand);
+			openCode(e.selection[0].bbCommand);
 		}
 	});
 	tree.onDidCollapseElement(e => {
@@ -37,7 +37,15 @@ async function __loadCode(command: any){
 	vscode.window.showTextDocument(uri);
 }
 
-async function loadCode(command: any){
+async function openCode(command: any){
+	// reload command
+	command = (await apiGet(`bots/${command.bot_id}/commands/${command.id}`));
+	// const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
+	if(!command){
+		vscode.window.showErrorMessage(`Error loading command: ${command.id}`);
+		return;
+	}
+
 	let cmdFile = saveCommandToFile(command);
 
 	let uri = vscode.Uri.file(cmdFile);
