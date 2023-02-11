@@ -1,9 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { apiGet } from './api';
+import { apiGet, apiPost, apiPut } from './api';
 import { getBBTreeView } from './tree';
-import { initBBFolder } from './bbfolder';
+import { extractBotIDFromFileName, extractCommandIDFromFileName, initBBFolder } from './bbfolder';
 
 var vsContext: vscode.ExtensionContext;
 
@@ -36,7 +36,25 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(loginCmd);
 
 	initBBFolder();
+
+	// save new content on file saving
+	vscode.workspace.onDidSaveTextDocument(textDoc => {
+		console.log(textDoc);
+		saveCommandCode(textDoc);
+	});
+
 	await buildBBTree();
+}
+
+async function saveCommandCode(textDoc: vscode.TextDocument){
+	const commandID = extractCommandIDFromFileName(textDoc.fileName);
+	const botID = extractBotIDFromFileName(textDoc.fileName);
+	const code = textDoc.getText();
+
+	const response = await apiPut(`bots/${botID}/commands/${commandID}/code`, {code});
+	if(response){
+		vscode.window.showInformationMessage(`Code saved to BB`);
+	}
 }
 
 async function saveAndCheckApiKey(apiKey:any) {

@@ -35,12 +35,6 @@ async function __loadCode(command: any){
 	edit.insert(uri, new vscode.Position(0, 0), command.code);
 	let success = await vscode.workspace.applyEdit(edit);
 	vscode.window.showTextDocument(uri);
-
-	vscode.workspace.onDidCloseTextDocument(e => {
-		if(e.uri === uri){
-			console.log('closed');
-		}
-	});
 }
 
 async function loadCode(command: any){
