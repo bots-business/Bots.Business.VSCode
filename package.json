@@ -35,7 +35,18 @@
           "name": "BB Bots"
         }
       ]
-    }
+    },
+    "configuration": [
+      {
+        "title": "Bots.Business",
+        "properties": {
+          "bots-business.apiKey": {
+            "type": "string",
+            "default": "",
+            "description": "Bots.Business API Key"
+          }
+        }
+      },
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
