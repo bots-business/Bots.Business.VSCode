@@ -4,11 +4,7 @@ Use this extension for quickly bot development with Bots.Business!
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-[BB Bots List](/images/main.png)
+![BB Bots List in VS Code](/images/main.png)
 
 > Tip: you can load code for any commands and edit it!
 
