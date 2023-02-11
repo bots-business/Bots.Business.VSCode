@@ -3,7 +3,7 @@
   "displayName": "Bots.Business",
   "description": "Create your bot with Bots.Business",
   "version": "0.0.1",
-  "icon": "https://github.com/bots-business/Bots.Business.VSCode/blob/main/images/icon.png",
+  "icon": "images/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/bots-business/Bots.Business.VSCode"
