@@ -57,7 +57,6 @@ async function openCode(command: any){
 	}
 }
 
-
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BotNode | undefined> = new vscode.EventEmitter<BotNode | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BotNode | undefined> = this._onDidChangeTreeData.event;
@@ -118,11 +117,35 @@ class BotNode extends vscode.TreeItem {
   // TODO: libs, chats, props will be children of bots later
 	public children: vscode.TreeItem[] = [];
 
+	getStatusIcon(bot: any){
+		if(bot.status === 'works'){
+			return 'flash.svg';
+		}
+		if(!bot.token){
+			return 'power.svg';
+		}
+		return 'wrench.svg';
+	}
+
+	getIconPath(bot: any){
+		return {
+			light: path.join(__filename, '..', '..', 'resources', 'light', this.getStatusIcon(bot)),
+			dark: path.join(__filename, '..', '..', 'resources', 'dark', this.getStatusIcon(bot))
+		};
+	}
+
 	constructor(public bot: any) {
 		super(bot.name, vscode.TreeItemCollapsibleState.Collapsed);
-		this.tooltip = `Bot id: ${bot.id}`;
+		this.tooltip = `Bot id: ${bot.id} - ${bot.status || "no token"}`;
 		this.contextValue = 'bot';
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+		this.iconPath = this.getIconPath(bot);
+
+		// this.command = {
+		// 	command: 'bots.business.runBot',
+		// 	title: 'Run Bot',
+		// 	arguments: [this],
+		// };
 	}
 }
 
