@@ -52,6 +52,8 @@ then press F5 for debugging
 See:
 https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 
+use `vsce package` for extension packing
+
 ## For more information
 
 * [Bots.Business - create your own bot](https://bots.business)
