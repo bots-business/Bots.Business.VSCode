@@ -1,8 +1,20 @@
 import * as fs from 'fs';
 import * as os from 'os';
+// it is derictory separator  / or \ depending on OS
+import { sep } from 'path';
+import * as path from 'path';
+
+const OS_SEPARATOR = sep;
+
+function diskToLowerCase(path: string) {
+  if (process.platform === 'win32') { return path; }
+  return path.replace(/^([A-Z]):/, (match, p1) => p1.toLowerCase() + ':');
+}
 
 export function getBBFolder() {
-  return `${os.tmpdir()}/Bots.Business`;
+  let bbFolder = `${os.tmpdir()}${OS_SEPARATOR}Bots.Business`;
+  bbFolder = diskToLowerCase(bbFolder);
+  return bbFolder;
 }
 
 function createDirIfNotExists(dirPath: string) {
@@ -15,7 +27,7 @@ export function initBBFolder(){
 }
 
 function getBotFolder(botID: number){
-  return `${getBBFolder()}/bot_${botID.toString()}`;
+  return path.join(getBBFolder(), `bot_${botID.toString()}`);
 }
 
 export function initBotFolder(botID: number){
@@ -25,7 +37,7 @@ export function initBotFolder(botID: number){
 function initCommandFolder(botID: number, commandID: number){
   const botFolder = getBotFolder(botID);
   createDirIfNotExists(botFolder);
-  const commandFolder = `${botFolder}/${commandID}`;
+  const commandFolder = path.join(botFolder, commandID.toString());
   createDirIfNotExists(commandFolder);
   return commandFolder;
 }
@@ -37,21 +49,22 @@ export function saveCommandToFile(command: any){
   fileName = fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
   fileName = `${fileName}.js`;
   let commandFolder = initCommandFolder(command.bot_id, command.id);
-  let filePath = `${commandFolder}/${fileName}`;
+  let filePath = path.join(commandFolder, fileName);
   fs.writeFileSync(filePath, command.code, {encoding: 'utf8', flag: 'w'});
   return filePath;
 }
 
 export function extractBotIDFromFileName(fileName: string){
-  let parts = fileName.split('/');
+  let parts = fileName.split(OS_SEPARATOR);
   return parts[parts.length - 3].split("bot_")[1];
 }
 
 export function extractCommandIDFromFileName(fileName: string){
-  let parts = fileName.split('/');
+  let parts = fileName.split(OS_SEPARATOR);
   return parts[parts.length - 2];
 }
 
 export function isBotFolder(folderPath: string){
+  folderPath = diskToLowerCase(folderPath);
   return folderPath.indexOf(getBBFolder()) === 0;
 }
