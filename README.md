@@ -34,10 +34,8 @@ Then you can fill BB Api Key in settings.json: "bots-business.apiKey" field.
 Calling out known issues can help limit users opening duplicate issues against your extension.
 
 ## Release Notes
+Please see: [CHANGELOG.md](https://github.com/bots-business/Bots.Business.VSCode/blob/main/CHANGELOG.md)
 
-### 0.0.1
-
-Initial release of Bots.Business Extension
 
 ## Make your own Github PR!
 See: https://github.com/bots-business/Bots.Business.VSCode
