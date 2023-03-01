@@ -6,14 +6,16 @@ import * as path from 'path';
 
 const OS_SEPARATOR = sep;
 
-function diskToLowerCase(path: string) {
-  if (process.platform === 'win32') { return path; }
-  return path.replace(/^([A-Z]):/, (match, p1) => p1.toLowerCase() + ':');
+function pathToLowerCaseOnWin32(path: string) {
+  if (process.platform === 'win32') {
+    return path.toLowerCase();
+  }
+  return path;
 }
 
 export function getBBFolder() {
   let bbFolder = `${os.tmpdir()}${OS_SEPARATOR}Bots.Business`;
-  bbFolder = diskToLowerCase(bbFolder);
+  bbFolder = pathToLowerCaseOnWin32(bbFolder);
   return bbFolder;
 }
 
@@ -65,6 +67,6 @@ export function extractCommandIDFromFileName(fileName: string){
 }
 
 export function isBotFolder(folderPath: string){
-  folderPath = diskToLowerCase(folderPath);
+  folderPath = pathToLowerCaseOnWin32(folderPath);
   return folderPath.indexOf(getBBFolder()) === 0;
 }

@@ -52,8 +52,8 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 
 	// c:\Users\user\AppData\Local\Temp\Bots.Business\bot_123\456\command.js
 	if(!isBotFolder(textDoc.fileName)){
-		vscode.window.showErrorMessage(`Not a BB folder. Not saving code to BB. Cur folder: ${textDoc.fileName}`);
-		vscode.window.showErrorMessage(`BB folder is: ${getBBFolder()}`);
+		// vscode.window.showErrorMessage(`Not a BB folder. Not saving code to BB. Cur folder: ${textDoc.fileName}`);
+		// vscode.window.showErrorMessage(`BB folder is: ${getBBFolder()}`);
 		return;
 	}
 
