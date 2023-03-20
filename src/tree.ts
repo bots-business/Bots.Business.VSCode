@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { apiGet } from './api';
+import { apiGet, apiPost } from './api';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -22,11 +22,11 @@ export function getBBTreeView(bots: any[]) {
 	tree.onDidChangeVisibility(e => {
 		console.log(e);
 	});
-	tree.onDidExpandElement(e => {
+	tree.onDidExpandElement(e => {	
 		console.log(e);
 	});
-
-  return tree;
+	//return tree
+    return {botTreeDataProvider,tree};
 }
 
 async function __loadCode(command: any){
@@ -55,6 +55,28 @@ async function openCode(command: any){
 		vscode.window.showErrorMessage(`Error opening file: ${cmdFile}`);
 		return;
 	}
+}
+
+export async function createCommand(element:BotNode|FolderTreeItem,command:any,tree:BotTreeDataProvider|undefined) {
+	var BotNodeElement;
+	if(element instanceof BotNode){
+		BotNodeElement = element;
+	}
+	if(element instanceof FolderTreeItem){
+		BotNodeElement = element.parent;
+		command.commands_folder_id = element.folder.id;
+	}
+	if(!BotNodeElement ||!command || !tree){return;};
+	let newCmd = (await apiPost(`bots/${BotNodeElement.bot.id}/commands`,command));
+	if(!newCmd){
+		vscode.window.showErrorMessage(`Error creating command: ${command}`);
+		return;
+	}
+
+	if(newCmd.id){
+		vscode.window.showInformationMessage(`Command Successsfully Created: ${newCmd.command}`);
+	}
+	tree.refreshBotNode(BotNodeElement);
 }
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
@@ -89,19 +111,23 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 		return element.children.map((item) => item as BotNode);
   }
 
+ 	refreshBotNode(element?: any): void {
+		this._onDidChangeTreeData.fire(element);
+  	}
+  
 	async getChildren(element?: BotNode|undefined) {
-    if (element === undefined) {
+		if (element === undefined) {
 			return this.bots.map((bot) => new BotNode(bot));
-    }
+		}
 
 		if(element instanceof FolderTreeItem){
 			return element.children.map((item) => item as BotNode);
 		}
-
-    if(element instanceof BotNode){
-      return this.getItemsForBotElement(element);
-    }
-  }
+		
+		if(element instanceof BotNode){
+			 return this.getItemsForBotElement(element);
+		 }
+	}
 
 	getParent(element: BotNode): BotNode | null {
     if (element instanceof FolderTreeItem) {
@@ -140,7 +166,7 @@ class BotNode extends vscode.TreeItem {
 		this.contextValue = 'bot';
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		this.iconPath = this.getIconPath(bot);
-
+		
 		// this.command = {
 		// 	command: 'bots.business.runBot',
 		// 	title: 'Run Bot',
@@ -153,7 +179,7 @@ class FolderTreeItem extends vscode.TreeItem {
   // commands are children of folders
   public children: vscode.TreeItem[] = [];
 
-	constructor(private folder: any, public parent: BotNode) {
+	constructor(public folder: any, public parent: BotNode) {
 		super(folder.title);
 		this.tooltip = folder.title;
 		this.contextValue = 'folder';

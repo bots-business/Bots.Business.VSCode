@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { apiGet, apiPost, apiPut } from './api';
-import { getBBTreeView } from './tree';
+import { createCommand, getBBTreeView } from './tree';
 import { extractBotIDFromFileName, extractCommandIDFromFileName, getBBFolder, initBBFolder, isBotFolder } from './bbfolder';
 
 var vsContext: vscode.ExtensionContext;
@@ -43,7 +43,19 @@ export async function activate(context: vscode.ExtensionContext) {
 		saveCommandCode(textDoc);
 	});
 
-	await buildBBTree();
+	let tree = await buildBBTree();
+
+	let addCmd = vscode.commands.registerCommand('bots.business.addCommand', async (element: any) => {
+
+		const cmdName = await vscode.window.showInputBox({
+			placeHolder: 'Enter the Name for the Command. Eg: /start'
+		});
+		if(!cmdName){return;};
+		createCommand(element,{command: cmdName},tree);
+	});
+
+
+	context.subscriptions.push(addCmd);
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
@@ -103,7 +115,9 @@ function getEmail(){
 async function buildBBTree() {
 	const bots = await apiGet("bots");
 	if(!bots){ return; }
-	vsContext.subscriptions.push(getBBTreeView(bots));
+	let BBtree = getBBTreeView(bots);
+	vsContext.subscriptions.push(BBtree.tree);
+	return BBtree.botTreeDataProvider;
 }
 
 // This method is called when your extension is deactivated
