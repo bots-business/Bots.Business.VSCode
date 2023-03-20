@@ -21,7 +21,8 @@ function getUrl(path: string){
 const methods = {
   get: axios.get,
   post: axios.post,
-  put: axios.put
+  put: axios.put,
+  delete: axios.delete
 };
 
 function checkResponse(response: any, url: string){
@@ -58,4 +59,8 @@ export async function apiPost(path: string, data: any){
 
 export async function apiPut(path: string, data: any){
   return apiRequest('put', path, data);
+}
+
+export async function apiDelete(path: string){
+  return apiRequest('delete', path);
 }
