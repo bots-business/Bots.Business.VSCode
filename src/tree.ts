@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
 import { apiGet } from './api';
 import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs';
-import { saveCommandToFile } from './bbfolder';
+import { openCode } from './actions';
 
 export function getBBTreeView(bots: any[]) {
 	const botTreeDataProvider = new BotTreeDataProvider(bots);
@@ -27,34 +25,6 @@ export function getBBTreeView(bots: any[]) {
 	});
 
   return tree;
-}
-
-async function __loadCode(command: any){
-	const edit = new vscode.WorkspaceEdit();
-	let uri = vscode.Uri.parse(`untitled:${command.command}`);
-	edit.insert(uri, new vscode.Position(0, 0), command.code);
-	let success = await vscode.workspace.applyEdit(edit);
-	vscode.window.showTextDocument(uri);
-}
-
-async function openCode(command: any){
-	// reload command
-	command = (await apiGet(`bots/${command.bot_id}/commands/${command.id}`));
-	// const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
-	if(!command){
-		vscode.window.showErrorMessage(`Error loading command: ${command.id}`);
-		return;
-	}
-
-	let cmdFile = saveCommandToFile(command);
-
-	let uri = vscode.Uri.file(cmdFile);
-	let document = await vscode.workspace.openTextDocument(uri, );
-	let success = await vscode.window.showTextDocument(document, {preview: true});
-	if (!success) {
-		vscode.window.showErrorMessage(`Error opening file: ${cmdFile}`);
-		return;
-	}
 }
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {

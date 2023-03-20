@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { apiGet, apiPost, apiPut } from './api';
 import { getBBTreeView } from './tree';
 import { extractBotIDFromFileName, extractCommandIDFromFileName, getBBFolder, initBBFolder, isBotFolder } from './bbfolder';
+import { deleteItem } from './actions';
 
 var vsContext: vscode.ExtensionContext;
 
@@ -15,15 +16,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "bots-business" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Bots.Business!');
-	});
-
 	let loginCmd = vscode.commands.registerCommand('BB:login', async () => {
 		const apiKey = await vscode.window.showInputBox({
 			placeHolder: 'Enter your BB API key',
@@ -32,8 +24,31 @@ export async function activate(context: vscode.ExtensionContext) {
 		saveAndCheckApiKey(apiKey);
 	});
 
-	context.subscriptions.push(disposable);
 	context.subscriptions.push(loginCmd);
+
+	const command = vscode.commands.registerCommand('BB.newCommand', () => {
+		vscode.window.showInformationMessage('Hello World from Bots.Business!');
+	});
+
+	context.subscriptions.push(command);
+
+
+	const deleteItemCmd = vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
+		deleteItem(item);
+	});
+	context.subscriptions.push(deleteItemCmd);
+
+
+	const panel = vscode.window.createWebviewPanel(
+		'BBView',
+		'Bots.Business',
+		vscode.ViewColumn.One,
+		{}
+	);
+
+	panel.webview.html = "<h1>Bots.Business VS Code extension</h1>";
+
+	context.subscriptions.push(panel);
 
 	initBBFolder();
 
