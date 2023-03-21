@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { apiGet } from './api';
+import { apiGet, apiPost,apiDelete } from './api';
 import * as path from 'path';
 import { openCode } from './actions';
 
@@ -24,7 +24,7 @@ export function getBBTreeView(bots: any[]) {
 		console.log(e);
 	});
 
-  return tree;
+  return {tree, botTreeDataProvider};
 }
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
@@ -41,7 +41,7 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
     const bot = element.bot;
     
     let folders = (await apiGet(`bots/${bot.id}/commands_folders`)) || [];
-		const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
+	const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
 
     folders.forEach((folder: any) => {
       folder.children = commands.filter((command: any) => command.commands_folder_id === folder.id);
@@ -58,6 +58,10 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 
 		return element.children.map((item) => item as BotNode);
   }
+
+  	refreshBotNode(element?: any): void {
+		this._onDidChangeTreeData.fire(element);
+  	}
 
 	async getChildren(element?: BotNode|undefined) {
     if (element === undefined) {
@@ -82,7 +86,7 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
   }
 }
 
-class BotNode extends vscode.TreeItem {
+export class BotNode extends vscode.TreeItem {
   // folders are children of bots
   // TODO: libs, chats, props will be children of bots later
 	public children: vscode.TreeItem[] = [];
@@ -97,6 +101,15 @@ class BotNode extends vscode.TreeItem {
 		return 'wrench.svg';
 	}
 
+	getContextValue(bot:any){
+		if(bot.status === 'works'){
+			return 'bot.works';
+		}
+		if(!bot.token){
+			return 'bot.noToken';
+		}
+		return 'bot.off';
+	}
 	getIconPath(bot: any){
 		return {
 			light: path.join(__filename, '..', '..', 'resources', 'light', this.getStatusIcon(bot)),
@@ -107,7 +120,7 @@ class BotNode extends vscode.TreeItem {
 	constructor(public bot: any) {
 		super(bot.name, vscode.TreeItemCollapsibleState.Collapsed);
 		this.tooltip = `Bot id: ${bot.id} - ${bot.status || "no token"}`;
-		this.contextValue = 'bot';
+		this.contextValue =  this.getContextValue(bot);
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		this.iconPath = this.getIconPath(bot);
 
@@ -119,11 +132,11 @@ class BotNode extends vscode.TreeItem {
 	}
 }
 
-class FolderTreeItem extends vscode.TreeItem {
+export class FolderTreeItem extends vscode.TreeItem {
   // commands are children of folders
   public children: vscode.TreeItem[] = [];
 
-	constructor(private folder: any, public parent: BotNode) {
+	constructor(public folder: any, public parent: BotNode) {
 		super(folder.title);
 		this.tooltip = folder.title;
 		this.contextValue = 'folder';
@@ -132,7 +145,7 @@ class FolderTreeItem extends vscode.TreeItem {
 	}
 }
 
-class CommandTreeItem extends vscode.TreeItem {
+export class CommandTreeItem extends vscode.TreeItem {
   constructor(public bbCommand: any, public parent: vscode.TreeItem ) {
     super(bbCommand.command);
     this.tooltip = 

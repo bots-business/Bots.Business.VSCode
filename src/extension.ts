@@ -2,9 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { apiGet, apiPost, apiPut } from './api';
+import {createNewBot,updateStatus,createCommand,createFolder,deleteItem} from './actions';
 import { getBBTreeView } from './tree';
 import { extractBotIDFromFileName, extractCommandIDFromFileName, getBBFolder, initBBFolder, isBotFolder } from './bbfolder';
-import { deleteItem } from './actions';
+
 
 var vsContext: vscode.ExtensionContext;
 
@@ -26,19 +27,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(loginCmd);
 
-	const command = vscode.commands.registerCommand('BB.newCommand', () => {
-		vscode.window.showInformationMessage('Hello World from Bots.Business!');
-	});
-
-	context.subscriptions.push(command);
-
-
-	const deleteItemCmd = vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
-		deleteItem(item);
-	});
-	context.subscriptions.push(deleteItemCmd);
-
-
 	const panel = vscode.window.createWebviewPanel(
 		'BBView',
 		'Bots.Business',
@@ -58,7 +46,39 @@ export async function activate(context: vscode.ExtensionContext) {
 		saveCommandCode(textDoc);
 	});
 
-	await buildBBTree();
+	let tree = await buildBBTree();
+	
+	let refreshCmd = vscode.commands.registerCommand('BB.refresh', async () => {
+		await buildBBTree();
+	});
+
+	vscode.commands.registerCommand('BB.refreshBot', async (BotNode) => {
+		await tree?.refreshBotNode(BotNode);
+	});
+
+	vscode.commands.registerCommand('BB.newBot',async() => {
+		createNewBot();
+	});
+
+	vscode.commands.registerCommand('BB.startBot', async (item: any) => {
+		updateStatus(item,"start");
+	});
+	
+	vscode.commands.registerCommand('BB.stopBot', async (item: any) => {
+		updateStatus(item,"stop");
+	});
+	
+	vscode.commands.registerCommand('BB.newCommand', async (item: any) => {
+		createCommand(item);
+	});
+
+	vscode.commands.registerCommand('BB.createFolder', async (item: any) => {
+		createFolder(item);
+	});
+
+	vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
+		deleteItem(item);
+	});
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
@@ -110,15 +130,13 @@ async function saveAndCheckApiKey(apiKey:any) {
 	vscode.window.showErrorMessage(`Failed. Please check your BB Api key`);
 }
 
-function getEmail(){
-	return "test@example.com";
-	return vscode.workspace.getConfiguration().get('BotsBusiness.email');
-}
 
-async function buildBBTree() {
+export async function buildBBTree() {
 	const bots = await apiGet("bots");
 	if(!bots){ return; }
-	vsContext.subscriptions.push(getBBTreeView(bots));
+	let BBTree = getBBTreeView(bots);
+	vsContext.subscriptions.push(BBTree.tree);
+	return BBTree.botTreeDataProvider;
 }
 
 // This method is called when your extension is deactivated
