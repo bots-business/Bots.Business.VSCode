@@ -2,7 +2,7 @@
   "name": "bots-business",
   "displayName": "Bots.Business",
   "description": "Create your bot with Bots.Business",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icon": "images/icon.png",
   "repository": {
     "type": "git",
