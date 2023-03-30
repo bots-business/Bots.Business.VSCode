@@ -339,7 +339,7 @@ export async function viewCommand(element:CommandTreeItem) {
 	let command = (await apiGet(`bots/${element.bbCommand.bot_id}/commands/${element.bbCommand.id}`));
 	const panel = vscode.window.createWebviewPanel(
 		"command_"+command.id,
-		'Bots.Business',
+		'Command: '+command.command,
 		vscode.ViewColumn.One,
 		{
 		}
