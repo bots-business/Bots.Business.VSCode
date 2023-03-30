@@ -126,9 +126,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
-	// show message
-	vscode.window.showInformationMessage(`Saving code to BB...`);
-
 	// c:\Users\user\AppData\Local\Temp\Bots.Business\bot_123\456\command.js
 	if(!isBotFolder(textDoc.fileName)){
 		// vscode.window.showErrorMessage(`Not a BB folder. Not saving code to BB. Cur folder: ${textDoc.fileName}`);
@@ -136,6 +133,9 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 		return;
 	}
 
+	// show message
+	vscode.window.showInformationMessage(`Saving code to BB...`);
+	
 	const commandID = extractCommandIDFromFileName(textDoc.fileName);
 	const botID = extractBotIDFromFileName(textDoc.fileName);
 
