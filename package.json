@@ -23,14 +23,27 @@
         "title": "BB: Login to BB account"
       },
       {
-        "command": "BB.newCommand",
-        "title": "New Command"
+        "command": "bots.business.addCommand",
+        "title": "Add Command",
+        "icon": {
+          "light": "./resources/light/add.svg",
+          "dark": "./resources/dark/add.svg"
+        }                   
       },
       {
         "command": "BB.deleteItem",
         "title": "Delete"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "bots.business.addCommand",
+          "when": "view == botTreeView && viewItem == bot || viewItem == folder",
+          "group": "inline"
+        }
+      ]
+    },
     "views": {
       "BBView": [
         {
@@ -103,6 +116,6 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "axios": "^1.3.2"
+    "axios": "^1.3.4"
   }
 }

@@ -20,12 +20,60 @@ export function getBBTreeView(bots: any[]) {
 	tree.onDidChangeVisibility(e => {
 		console.log(e);
 	});
-	tree.onDidExpandElement(e => {
+	tree.onDidExpandElement(e => {	
 		console.log(e);
 	});
+	//return tree
+    return {botTreeDataProvider,tree};
+}
+
+async function __loadCode(command: any){
+	const edit = new vscode.WorkspaceEdit();
+	let uri = vscode.Uri.parse(`untitled:${command.command}`);
+	edit.insert(uri, new vscode.Position(0, 0), command.code);
+	let success = await vscode.workspace.applyEdit(edit);
+	vscode.window.showTextDocument(uri);
+}
+
+async function openCode(command: any){
+	// reload command
+	command = (await apiGet(`bots/${command.bot_id}/commands/${command.id}`));
+	// const commands = (await apiGet(`bots/${bot.id}/commands`)) || [];
+	if(!command){
+		vscode.window.showErrorMessage(`Error loading command: ${command.id}`);
+		return;
+	}
+
+	let cmdFile = saveCommandToFile(command);
+
+	let uri = vscode.Uri.file(cmdFile);
+	let document = await vscode.workspace.openTextDocument(uri, );
+	let success = await vscode.window.showTextDocument(document, {preview: true});
+	if (!success) {
+		vscode.window.showErrorMessage(`Error opening file: ${cmdFile}`);
+		return;
+	}
+}
+
+export async function createCommand(element:BotNode|FolderTreeItem,command:any,tree:BotTreeDataProvider|undefined) {
+	var BotNodeElement;
+	if(element instanceof BotNode){
+		BotNodeElement = element;
+	}
+	if(element instanceof FolderTreeItem){
+		BotNodeElement = element.parent;
+		command.commands_folder_id = element.folder.id;
+	}
+	if(!BotNodeElement ||!command || !tree){return;};
+	let newCmd = (await apiPost(`bots/${BotNodeElement.bot.id}/commands`,command));
+	if(!newCmd){
+		vscode.window.showErrorMessage(`Error creating command: ${command}`);
+		return;
+	}
 
   return {tree, botTreeDataProvider};
 }
+
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BotNode | undefined> = new vscode.EventEmitter<BotNode | undefined>();
@@ -59,23 +107,24 @@ class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 		return element.children.map((item) => item as BotNode);
   }
 
-  	refreshBotNode(element?: any): void {
+
+  refreshBotNode(element?: any): void {
 		this._onDidChangeTreeData.fire(element);
-  	}
+  }
 
 	async getChildren(element?: BotNode|undefined) {
-    if (element === undefined) {
+		if (element === undefined) {
 			return this.bots.map((bot) => new BotNode(bot));
-    }
+		}
 
 		if(element instanceof FolderTreeItem){
 			return element.children.map((item) => item as BotNode);
 		}
-
-    if(element instanceof BotNode){
-      return this.getItemsForBotElement(element);
-    }
-  }
+		
+		if(element instanceof BotNode){
+			 return this.getItemsForBotElement(element);
+		 }
+	}
 
 	getParent(element: BotNode): BotNode | null {
     if (element instanceof FolderTreeItem) {
@@ -123,7 +172,7 @@ export class BotNode extends vscode.TreeItem {
 		this.contextValue =  this.getContextValue(bot);
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		this.iconPath = this.getIconPath(bot);
-
+		
 		// this.command = {
 		// 	command: 'bots.business.runBot',
 		// 	title: 'Run Bot',

@@ -47,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	let tree = await buildBBTree();
-	
+
 	let refreshCmd = vscode.commands.registerCommand('BB.refresh', async () => {
 		await buildBBTree();
 	});
@@ -79,6 +79,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
 		deleteItem(item);
 	});
+
+	let addCmd = vscode.commands.registerCommand('bots.business.addCommand', async (element: any) => {
+
+	const cmdName = await vscode.window.showInputBox({
+			placeHolder: 'Enter the Name for the Command. Eg: /start'
+		});
+		if(!cmdName){return;};
+		createCommand(element,{command: cmdName},tree);
+	});
+
+
+	context.subscriptions.push(addCmd);
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
