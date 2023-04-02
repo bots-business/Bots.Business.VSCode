@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { apiGet, apiPost, apiPut } from './api';
 import { getBBTreeView } from './tree';
 import { extractBotIDFromFileName, extractCommandIDFromFileName, getBBFolder, initBBFolder, isBotFolder } from './bbfolder';
-import { deleteItem } from './actions';
+import {createNewBot,updateStatus,createCommand,createFolder,deleteItem,installLib,uninstallLib,installBot,viewCommand} from './actions';
 
 var vsContext: vscode.ExtensionContext;
 
@@ -26,19 +26,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(loginCmd);
 
-	const command = vscode.commands.registerCommand('BB.newCommand', () => {
-		vscode.window.showInformationMessage('Hello World from Bots.Business!');
-	});
-
-	context.subscriptions.push(command);
-
-
-	const deleteItemCmd = vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
-		deleteItem(item);
-	});
-	context.subscriptions.push(deleteItemCmd);
-
-
 	const panel = vscode.window.createWebviewPanel(
 		'BBView',
 		'Bots.Business',
@@ -58,13 +45,87 @@ export async function activate(context: vscode.ExtensionContext) {
 		saveCommandCode(textDoc);
 	});
 
-	await buildBBTree();
+	let tree = await buildBBTree();
+	//Following are the command for command palatte
+	context.subscriptions.push(vscode.commands.registerCommand('BB:refresh', async (item) => {
+		if(!item){
+			tree = await buildBBTree();
+		}else{
+			tree?.refresh(item);
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB:newBot',async() => {
+		createNewBot();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB:installBot', async () => {
+		installBot();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB:installLib', async (item: any) => {
+		installLib(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB:newCommand', async (item: any) => {
+		createCommand(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB:createFolder', async (item: any) => {
+		createFolder(item);
+	}));
+
+	//Following are the command for context menu
+	context.subscriptions.push(vscode.commands.registerCommand('BB.refresh', async (item) => {
+		if(!item){
+			tree = await buildBBTree();
+		}else{
+			tree?.refresh(item);
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.newBot',async() => {
+		createNewBot();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.installBot', async () => {
+		installBot();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.startBot', async (item: any) => {
+		updateStatus(item,"start");
+	}));
+	
+	context.subscriptions.push(vscode.commands.registerCommand('BB.stopBot', async (item: any) => {
+		updateStatus(item,"stop");
+	}));
+	
+	context.subscriptions.push(vscode.commands.registerCommand('BB.installLib', async (item: any) => {
+		installLib(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.uninstallLib', async (item: any) => {
+		uninstallLib(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.newCommand', async (item: any) => {
+		createCommand(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.createFolder', async (item: any) => {
+		createFolder(item);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.viewCommand', async (item: any) => {
+		viewCommand(item)
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('BB.deleteItem', async (item: any) => {
+		deleteItem(item);
+	}));
 }
 
 async function saveCommandCode(textDoc: vscode.TextDocument){
-	// show message
-	vscode.window.showInformationMessage(`Saving code to BB...`);
-
 	// c:\Users\user\AppData\Local\Temp\Bots.Business\bot_123\456\command.js
 	if(!isBotFolder(textDoc.fileName)){
 		// vscode.window.showErrorMessage(`Not a BB folder. Not saving code to BB. Cur folder: ${textDoc.fileName}`);
@@ -72,6 +133,9 @@ async function saveCommandCode(textDoc: vscode.TextDocument){
 		return;
 	}
 
+	// show message
+	vscode.window.showInformationMessage(`Saving code to BB...`);
+	
 	const commandID = extractCommandIDFromFileName(textDoc.fileName);
 	const botID = extractBotIDFromFileName(textDoc.fileName);
 
@@ -110,15 +174,13 @@ async function saveAndCheckApiKey(apiKey:any) {
 	vscode.window.showErrorMessage(`Failed. Please check your BB Api key`);
 }
 
-function getEmail(){
-	return "test@example.com";
-	return vscode.workspace.getConfiguration().get('BotsBusiness.email');
-}
 
-async function buildBBTree() {
+export async function buildBBTree() {
 	const bots = await apiGet("bots");
 	if(!bots){ return; }
-	vsContext.subscriptions.push(getBBTreeView(bots));
+	let BBTree = getBBTreeView(bots);
+	vsContext.subscriptions.push(BBTree.tree);
+	return BBTree.botTreeDataProvider;
 }
 
 // This method is called when your extension is deactivated

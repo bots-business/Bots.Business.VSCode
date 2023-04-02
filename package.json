@@ -2,7 +2,7 @@
   "name": "bots-business",
   "displayName": "Bots.Business",
   "description": "Create your bot with Bots.Business",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icon": "images/icon.png",
   "repository": {
     "type": "git",
@@ -20,11 +20,84 @@
     "commands": [
       {
         "command": "BB:login",
-        "title": "BB: Login to BB account"
+        "title": "BB:Login to BB account"
+      },
+      {
+        "command": "BB:refresh",
+        "title": "BB:Refresh"
+      },
+      {
+        "command": "BB:newBot",
+        "title": "BB:Create New Bot"
+      },
+      {
+        "command": "BB:installBot",
+        "title": "BB:Install Bot"
+      },
+      {
+        "command": "BB:installLib",
+        "title": "BB:Install Libs"
+      },
+      {
+        "command": "BB:newCommand",
+        "title": "BB:New Command"
+      },
+      {
+        "command": "BB:createFolder",
+        "title": "BB:Create Folder"
+      },
+
+      {
+        "command": "BB.refresh",
+        "title": "Refresh",
+        "icon": {
+          "light": "./resources/light/refresh.svg",
+          "dark": "./resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "BB.newBot",
+        "title": "Create New Bot",
+        "icon": {
+          "light": "./resources/light/add.svg",
+          "dark": "./resources/dark/add.svg"
+        }
+      },
+      {
+        "command": "BB.installBot",
+        "title": "Install Bot"
+      },
+      {
+        "command": "BB.startBot",
+        "title": "Start Bot"
+      },
+      {
+        "command": "BB.stopBot",
+        "title": "Stop Bot"
+      },
+      {
+        "command": "BB.installLib",
+        "title": "Install Libs"
+      },
+      {
+        "command": "BB.uninstallLib",
+        "title": "Uninstall Lib"
       },
       {
         "command": "BB.newCommand",
-        "title": "New Command"
+        "title": "New Command",
+        "icon": {
+          "light": "./resources/light/add.svg",
+          "dark": "./resources/dark/add.svg"
+        }
+      },
+      {
+        "command": "BB.createFolder",
+        "title": "Create Folder"
+      },
+      {
+        "command": "BB.viewCommand",
+        "title": "View Command"
       },
       {
         "command": "BB.deleteItem",
@@ -49,15 +122,61 @@
       ]
     },
     "menus": {
+      "view/title": [
+        {
+          "command": "BB.newBot",
+          "group": "navigation",
+          "when": "view == botTreeView"
+        },
+        {
+          "command": "BB.installBot",
+          "when": "view == botTreeView"
+        },
+        {
+          "command": "BB.refresh",
+          "group": "navigation",
+          "when": "view == botTreeView"
+        }
+      ],
       "view/item/context": [
         {
           "command": "BB.newCommand",
-          "when": "view == botTreeView && viewItem =~ /^(bot|folder)$/",
+          "when": "view == botTreeView && viewItem =~ /^(tree-command|folder)/",
+          "group": "inline"
+        },
+        {
+          "command": "BB.createFolder",
+          "when": "view == botTreeView && viewItem =~ /^(tree-command)/",
           "group": "navigation"
         },
         {
           "command": "BB.deleteItem",
-          "when": "view == botTreeView && viewItem =~ /^(bot|folder|command)$/",
+          "when": "view == botTreeView && viewItem =~ /^(bot|folder|command)/",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.installLib",
+          "when": "view == botTreeView && viewItem =~ /^(tree-lib)/",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.uninstallLib",
+          "when": "view == botTreeView && viewItem =~ /^(lib)/",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.startBot",
+          "when": "view == botTreeView && viewItem == bot.off",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.stopBot",
+          "when": "view == botTreeView && viewItem == bot.works",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.viewCommand",
+          "when": "view == botTreeView && viewItem =~ /^(command)/",
           "group": "navigation"
         }
       ]
@@ -94,6 +213,7 @@
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "@vscode/test-electron": "^2.2.2",
+    "esbuild": "^0.16.17",
     "eslint": "^8.33.0",
     "glob": "^8.1.0",
     "mocha": "^10.1.0",
@@ -103,6 +223,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.2.2",
     "axios": "^1.3.2"
   }
 }
