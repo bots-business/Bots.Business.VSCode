@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
 import { apiGet, apiPost } from './api';
 import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs';
-import { saveCommandToFile } from './bbfolder';
+import { openCode } from './actions';
 
 export function getBBTreeView(bots: any[]) {
 	const botTreeDataProvider = new BotTreeDataProvider(bots);
@@ -78,6 +76,7 @@ export async function createCommand(element:BotNode|FolderTreeItem,command:any,t
 	}
 	tree.refreshBotNode(BotNodeElement);
 }
+
 
 class BotTreeDataProvider implements vscode.TreeDataProvider<BotNode> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BotNode | undefined> = new vscode.EventEmitter<BotNode | undefined>();

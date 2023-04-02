@@ -19,16 +19,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "helloWorld",
-        "title": "Hello World"
-      },
-      {
         "command": "BB:login",
         "title": "BB: Login to BB account"
-      },
-      {
-        "command": "BB:test",
-        "title": "BB:test"
       },
       {
         "command": "bots.business.addCommand",
@@ -37,6 +29,10 @@
           "light": "./resources/light/add.svg",
           "dark": "./resources/dark/add.svg"
         }                   
+      },
+      {
+        "command": "BB.deleteItem",
+        "title": "Delete"
       }
     ],
     "menus": {
@@ -49,10 +45,33 @@
       ]
     },
     "views": {
-      "explorer": [
+      "BBView": [
         {
           "id": "botTreeView",
-          "name": "BB Bots"
+          "name": "Bots"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "BBView",
+          "title": "Bots.Business",
+          "icon": "images/icon.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "BB.newCommand",
+          "when": "view == botTreeView && viewItem =~ /^(bot|folder)$/",
+          "group": "navigation"
+        },
+        {
+          "command": "BB.deleteItem",
+          "when": "view == botTreeView && viewItem =~ /^(bot|folder|command)$/",
+          "group": "navigation"
         }
       ]
     },
