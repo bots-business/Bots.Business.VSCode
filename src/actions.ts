@@ -1,16 +1,9 @@
 import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 import * as vscode from "vscode";
 import { saveCommandToFile } from "./bbfolder";
-import {
-  BotNode,
-  LibTree,
-  CommandTree,
-  ErrorTree,
-  FolderTreeItem,
-  CommandTreeItem,
-  LibTreeItem,
-} from "./tree";
 import { getCommandViewPage } from "./webPage";
+import { BotNode } from "./tree/bot-node";
+import { LibTree, CommandTree, ErrorTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
 
 async function getBotNode(
   element:

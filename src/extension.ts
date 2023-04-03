@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { apiGet, apiPut } from "./api";
-import { getBBTreeView } from "./tree";
+import { getBBTreeView } from "./tree/tree";
 import {
   extractBotIDFromFileName,
   extractCommandIDFromFileName,
