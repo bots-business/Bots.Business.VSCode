@@ -2,64 +2,11 @@ import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 import * as vscode from "vscode";
 import { saveCommandToFile } from "./bbfolder";
 import { getCommandViewPage } from "./webPage";
-import { BotNode } from "./tree/bot-node";
+import { BotNode, getBot, getBotNode, MenuItemTypes } from "./tree/bot-node";
 import { LibTree, CommandTree, ErrorTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
 
-async function getBotNode(
-  element:
-    | BotNode
-    | LibTree
-    | CommandTree
-    | ErrorTree
-    | FolderTreeItem
-    | CommandTreeItem
-    | LibTreeItem
-): Promise<any> {
-  if (element instanceof BotNode) {
-    return element;
-  }
-  if (element instanceof LibTree) {
-    return element.parent;
-  }
-  if (element instanceof CommandTree) {
-    return element.parent;
-  }
-  if (element instanceof ErrorTree) {
-    return element.parent;
-  }
-  if (element instanceof LibTreeItem) {
-    return element.parent.parent;
-  }
-  if (element instanceof FolderTreeItem) {
-    return element.parent.parent;
-  }
-  if (element instanceof CommandTreeItem) {
-    if (element.parent instanceof FolderTreeItem) {
-      return element.parent.parent.parent;
-    }
-    if (element.parent instanceof CommandTree) {
-      return element.parent.parent;
-    }
-  }
-}
 
-async function getTheBot(
-  element:
-    | BotNode
-    | LibTree
-    | CommandTree
-    | ErrorTree
-    | FolderTreeItem
-    | CommandTreeItem
-    | LibTreeItem
-    | undefined,
-  placeHolderText?: string
-) {
-  //this function return the bot information on based of any Node selected and if not,ask User for it
-  if (element) {
-    let BotNodeElement: any = await getBotNode(element);
-    return BotNodeElement.bot;
-  }
+async function pickBot(placeHolderText?: string){
   //If not got then ask for the Bot
   let bots = (await apiGet(`bots`)) || [];
   let items = bots.map((bot: any) => {
@@ -74,6 +21,12 @@ async function getTheBot(
     canPickMany: false,
   });
   return result.bot;
+}
+
+async function getBotOrPickBot(element: MenuItemTypes, placeHolderText?: string){
+  let bot = getBot(element);
+  if(bot){ return bot; }
+  return await pickBot(placeHolderText);
 }
 
 async function refresh(
@@ -302,7 +255,7 @@ export async function installBot() {
 }
 
 export async function updateStatus(element: BotNode, status: String) {
-  let bot: any = await getTheBot(element);
+  let bot: any = await getBotOrPickBot(element);
   if (!element) {
     return;
   }
@@ -333,7 +286,7 @@ export async function startBot(element: BotNode) {
 }
 
 export async function installLib(element: LibTree | undefined) {
-  let bot: any = await getTheBot(
+  let bot: any = await getBotOrPickBot(
     element,
     "Select the Bot in which you want to install Libs"
   );
@@ -367,7 +320,7 @@ export async function installLib(element: LibTree | undefined) {
 }
 
 export async function uninstallLib(element: LibTreeItem) {
-  let bot: any = await getTheBot(element);
+  let bot: any = await getBotOrPickBot(element);
   const result = await vscode.window.showWarningMessage(
     `Are you sure you want to uninstall Lib ${element.label}?`,
     { modal: true },
@@ -394,7 +347,7 @@ export async function uninstallLib(element: LibTreeItem) {
 export async function createCommand(
   element: CommandTree | FolderTreeItem | undefined
 ) {
-  let bot: any = await getTheBot(
+  let bot: any = await getBotOrPickBot(
     element,
     "Select the Bot in which you want to create Command"
   );
@@ -427,7 +380,7 @@ export async function createCommand(
 }
 
 export async function createFolder(element: CommandTree | undefined) {
-  let bot: any = await getTheBot(
+  let bot: any = await getBotOrPickBot(
     element,
     "Select the Bot in which you want to create Folder"
   );
@@ -473,7 +426,7 @@ export async function deleteItem(
   element: BotNode | FolderTreeItem | CommandTreeItem
 ) {
   let itemType, deleteUrl;
-  let bot: any = await getTheBot(element);
+  let bot: any = await getBotOrPickBot(element);
   if (!element || !bot) {
     return;
   }

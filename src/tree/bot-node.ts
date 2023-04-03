@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import { LibTree, CommandTree, ErrorTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./sub-nodes";
 
 export class BotNode extends vscode.TreeItem {
   // folders are children of bots
@@ -53,4 +54,59 @@ export class BotNode extends vscode.TreeItem {
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
     this.iconPath = this.getIconPath(bot);
   }
+}
+
+export function getBotNode(
+  element:
+    | BotNode
+    | LibTree
+    | CommandTree
+    | ErrorTree
+    | FolderTreeItem
+    | CommandTreeItem
+    | LibTreeItem
+) {
+  if (element instanceof BotNode) {
+    return element;
+  }
+  if (element instanceof LibTree) {
+    return element.parent;
+  }
+  if (element instanceof CommandTree) {
+    return element.parent;
+  }
+  if (element instanceof ErrorTree) {
+    return element.parent;
+  }
+  if (element instanceof LibTreeItem) {
+    return element.parent.parent;
+  }
+  if (element instanceof FolderTreeItem) {
+    return element.parent.parent;
+  }
+  if (element instanceof CommandTreeItem) {
+    if (element.parent instanceof FolderTreeItem) {
+      return element.parent.parent.parent;
+    }
+    if (element.parent instanceof CommandTree) {
+      return element.parent.parent;
+    }
+  }
+}
+
+export type MenuItemTypes =
+  | BotNode
+  | LibTree
+  | CommandTree
+  | ErrorTree
+  | FolderTreeItem
+  | CommandTreeItem
+  | LibTreeItem
+  | undefined;
+
+export function getBot( element: MenuItemTypes) {
+  //this function return the bot information on based of any Node selected and if not,ask User for it
+  if (!element) { return; }
+  let botNodeElement: any = getBotNode(element);
+  return botNodeElement.bot;
 }
