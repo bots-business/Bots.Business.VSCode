@@ -11,7 +11,7 @@ function getUrl(path: string){
   const apiKey = getApiKey();
   if(!apiKey){
     vscode.window.showInformationMessage('BB Api key not setuped yet. Please login first.');
-    return false;
+    return;
   }
   const url = API_URL + `${path}?api_key=${apiKey}`;
   console.log(`Loading data from url ${url}`);
