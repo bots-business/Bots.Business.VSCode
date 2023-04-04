@@ -15,9 +15,9 @@ function getUrl(path: string){
   }
   const url = API_URL + `${path}?api_key=${apiKey}`;
   console.log(`Loading data from url ${url}`);
+
   return url;
 }
-
 const methods = {
   get: axios.get,
   post: axios.post,
