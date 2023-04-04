@@ -148,13 +148,7 @@ export async function dropHandler(target: any, bbCommand: any) {
     return;
   }
 
-  const result = await vscode.window.showWarningMessage(
-    warningStatement,
-    { modal: true },
-    "Yes",
-    "No"
-  );
-  if (result !== "Yes") {
+  if(!showConfirmationDialog(warningStatement)){
     return;
   }
 
@@ -170,6 +164,18 @@ export async function dropHandler(target: any, bbCommand: any) {
     "commandTree",
     target
   );
+}
+
+async function showConfirmationDialog(warning: string){
+  const result = await vscode.window.showWarningMessage(
+    warning,
+    { modal: true },
+    "Yes",
+    "No"
+  );
+
+  // return true if result YES
+  return result === "Yes";
 }
 
 function showInformationAndRefressTreeOnSuccess(
@@ -309,13 +315,8 @@ export async function installLib(element: LibTree | undefined) {
 
 export async function uninstallLib(element: LibTreeItem) {
   let bot: any = await getBotOrPickBot(element);
-  const result = await vscode.window.showWarningMessage(
-    `Are you sure you want to uninstall Lib ${element.label}?`,
-    { modal: true },
-    "Yes",
-    "No"
-  );
-  if (result !== "Yes") {
+
+  if(!showConfirmationDialog(`Are you sure you want to uninstall Lib ${element.label}?`)){
     return;
   }
 
@@ -423,13 +424,7 @@ export async function deleteItem(
     deleteUrl = `bots/${bot.id}/commands/${element.bbCommand.id}`;
   }
 
-  const result = await vscode.window.showWarningMessage(
-    `Are you sure you want to delete ${itemType} ${element.label}?`,
-    { modal: true },
-    "Yes",
-    "No"
-  );
-  if (result !== "Yes") {
+  if(!showConfirmationDialog(`Are you sure you want to delete ${itemType} ${element.label}?`)){
     return;
   }
 
