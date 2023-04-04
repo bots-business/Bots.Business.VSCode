@@ -162,15 +162,14 @@ export async function dropHandler(target: any, bbCommand: any) {
     `bots/${bbCommand.bot_id}/commands/${bbCommand.id}`,
     bbCommand
   );
-  if (!updatedCmd) {
-    vscode.window.showErrorMessage(
-      `Error updating command: ${bbCommand?.command}`
-    );
-    return;
-  }
-  vscode.window.showInformationMessage("Command Successfully Transfered");
 
-  refresh("commandTree", target);
+  showInformationAndRefressTreeOnSuccess(
+    updatedCmd,
+    `Command: ${bbCommand.command} Successfully Transfered`,
+    `Error updating command: ${bbCommand?.command}`,
+    "commandTree",
+    target
+  );
 }
 
 function showInformationAndRefressTreeOnSuccess(
