@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { LibTree, CommandTree, ErrorTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./sub-nodes";
+import { getIconsPath } from "./node-icon";
 
 export type MenuItemTypes =
   | BotNode
@@ -35,33 +36,13 @@ export class BotNode extends vscode.TreeItem {
     }
     return "bot.off";
   }
-  getIconPath(bot: any) {
-    return {
-      light: path.join(
-        __filename,
-        "..",
-        "..",
-        "resources",
-        "light",
-        this.getStatusIcon(bot)
-      ),
-      dark: path.join(
-        __filename,
-        "..",
-        "..",
-        "resources",
-        "dark",
-        this.getStatusIcon(bot)
-      ),
-    };
-  }
 
   constructor(public bot: any) {
     super(bot.name, vscode.TreeItemCollapsibleState.Collapsed);
     this.tooltip = `Bot id: ${bot.id} - ${bot.status || "⚠️ No token"}`;
     this.contextValue = this.getContextValue(bot);
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-    this.iconPath = this.getIconPath(bot);
+    this.iconPath = getIconsPath(this.getStatusIcon(bot));
   }
 }
 

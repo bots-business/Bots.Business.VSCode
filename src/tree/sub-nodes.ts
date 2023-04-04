@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { BotNode } from "./bot-node";
+import { getIconsPath } from "./node-icon";
 
 export class LibTree extends vscode.TreeItem {
   public children: vscode.TreeItem[] = [];
@@ -10,17 +11,7 @@ export class LibTree extends vscode.TreeItem {
     this.tooltip = "Libs";
     this.contextValue = "tree-lib";
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-    this.iconPath = {
-      light: path.join(
-        __filename,
-        "..",
-        "..",
-        "resources",
-        "light",
-        "flask.svg"
-      ),
-      dark: path.join(__filename, "..", "..", "resources", "dark", "flask.svg"),
-    };
+    this.iconPath = getIconsPath("flask.svg");
   }
 }
 
@@ -32,17 +23,7 @@ export class CommandTree extends vscode.TreeItem {
     this.tooltip = "Commands";
     this.contextValue = "tree-command";
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-    this.iconPath = {
-      light: path.join(
-        __filename,
-        "..",
-        "..",
-        "resources",
-        "light",
-        "flash.svg"
-      ),
-      dark: path.join(__filename, "..", "..", "resources", "dark", "flash.svg"),
-    };
+    this.iconPath = getIconsPath("flash.svg");
   }
 }
 
@@ -53,10 +34,7 @@ export class ErrorTree extends vscode.TreeItem {
     this.tooltip = "Errors";
     this.contextValue = "tree-error";
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-    this.iconPath = {
-      light: path.join(__filename, "..", "..", "resources", "light", "bug.svg"),
-      dark: path.join(__filename, "..", "..", "resources", "dark", "bug.svg"),
-    };
+    this.iconPath = getIconsPath("bug.svg");
   }
 }
 
