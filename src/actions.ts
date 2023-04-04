@@ -38,12 +38,8 @@ async function refresh(
 ) {
   let item;
 
-  if (node === "botTree") {
-    if (element) {
-      item = getBotNode(element);
-    } else {
-      item = undefined;
-    }
+  if ((element)&&(node === "botTree")) {
+    item = getBotNode(element);
   }
 
   if (node === "commandTree") {
@@ -58,8 +54,6 @@ async function refresh(
       if (element.parent instanceof CommandTree) {
         item = element.parent;
       }
-    } else {
-      item = undefined;
     }
   }
 
@@ -68,10 +62,10 @@ async function refresh(
       item = element;
     } else if (element instanceof LibTreeItem) {
       item = element.parent;
-    } else {
-      item = undefined;
     }
   }
+
+  if(!item){ return; }
 
   vscode.commands.executeCommand("BB:refresh", item);
 }
@@ -93,7 +87,6 @@ export async function openCode(command: any) {
   });
   if (!success) {
     vscode.window.showErrorMessage(`Error opening file: ${cmdFile}`);
-    return;
   }
 }
 
@@ -260,13 +253,13 @@ export async function updateStatus(element: BotNode, status: String) {
       `Bot ${status === "start" ? "Started" : "Stopped"}: ${newStatus.name}`
     );
     refresh("tree");
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while ${status === "start" ? "starting" : "stopping"} Bot: ${
-        element.bot.name
-      }`
-    );
-  }
+    return;
+  } 
+  vscode.window.showErrorMessage(
+    `Error while ${status === "start" ? "starting" : "stopping"} Bot: ${
+      element.bot.name
+    }`
+  );
 }
 
 export async function stopBot(element: BotNode) {
@@ -304,11 +297,11 @@ export async function installLib(element: LibTree | undefined) {
   if (installed) {
     vscode.window.showInformationMessage(`Lib Installed: ${result.label}`);
     refresh("libTree", element);
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while installing the Lib: ${result.label}`
-    );
+    return;
   }
+  vscode.window.showErrorMessage(
+    `Error while installing the Lib: ${result.label}`
+  );
 }
 
 export async function uninstallLib(element: LibTreeItem) {
@@ -329,11 +322,11 @@ export async function uninstallLib(element: LibTreeItem) {
       `Lib Uninstalled: ${element.lib.name}`
     );
     refresh("libTree", element);
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while uninstalling Lib: ${element.lib.name}`
-    );
+    return;
   }
+  vscode.window.showErrorMessage(
+    `Error while uninstalling Lib: ${element.lib.name}`
+  );
 }
 
 export async function createCommand(
@@ -364,11 +357,11 @@ export async function createCommand(
       `Command Successsfully Created: ${newCmd.command}`
     );
     refresh("commandTree", element);
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while creating new command: ${cmdName}`
-    );
+    return;
   }
+  vscode.window.showErrorMessage(
+    `Error while creating new command: ${cmdName}`
+  );
 }
 
 export async function createFolder(element: CommandTree | undefined) {
