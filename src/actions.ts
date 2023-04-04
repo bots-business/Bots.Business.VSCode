@@ -23,32 +23,24 @@ async function pickBot(placeHolderText?: string){
   return result.bot;
 }
 
-async function getBotOrPickBot(element: MenuItemTypes, placeHolderText?: string){
-  let bot = getBot(element);
-  if(bot){ return bot; }
+async function getBotOrPickBot(element?: MenuItemTypes, placeHolderText?: string){
+  if(element){
+    let bot = getBot(element);
+    if(bot){ return bot; }
+  }
+ 
   return await pickBot(placeHolderText);
 }
 
 async function refresh(
   node: "tree" | "botTree" | "commandTree" | "libTree",
-  element?:
-    | BotNode
-    | LibTree
-    | CommandTree
-    | ErrorTree
-    | FolderTreeItem
-    | CommandTreeItem
-    | LibTreeItem
-    | undefined
+  element?: MenuItemTypes
 ) {
-  let item; //This is the element which we will pass to refresh command
-  if (node === "tree") {
-    item = undefined;
-  }
+  let item;
 
   if (node === "botTree") {
     if (element) {
-      item = await getBotNode(element);
+      item = getBotNode(element);
     } else {
       item = undefined;
     }
