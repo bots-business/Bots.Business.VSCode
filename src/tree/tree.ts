@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
-import { apiGet, apiPost, apiDelete } from "../api";
-import * as path from "path";
-import { openCode, dropHandler } from "../actions";
+import { openCode } from "../actions";
 import { BotTreeDataProvider } from "./bot-tree-data-provider";
 import { CommandTreeItem } from "./sub-nodes";
 

@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { BotNode } from "./bot-node";
 import { getIconsPath } from "./node-icon";
 

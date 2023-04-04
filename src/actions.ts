@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { saveCommandToFile } from "./bbfolder";
 import { getCommandViewPage } from "./webPage";
 import { BotNode, getBot, getBotNode, MenuItemTypes } from "./tree/bot-node";
-import { LibTree, CommandTree, ErrorTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
+import { LibTree, CommandTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
 
 
 async function pickBot(placeHolderText?: string){
