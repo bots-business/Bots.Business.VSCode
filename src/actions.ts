@@ -173,6 +173,23 @@ export async function dropHandler(target: any, bbCommand: any) {
   refresh("commandTree", target);
 }
 
+function showInformationAndRefressTreeOnSuccess(
+  success:boolean, 
+  message:string, 
+  errMessage:string, 
+  tree?: "tree" | "botTree" | "commandTree" | "libTree",
+  element?: BotNode | CommandTree | FolderTreeItem | CommandTreeItem
+){
+  if (!success) {
+    vscode.window.showErrorMessage(errMessage);
+    return;
+  }
+  vscode.window.showInformationMessage(message);
+  if(!tree){ tree = "tree"; }
+  if(element){ refresh(tree, element); return; }
+  refresh(tree);
+}
+
 export async function createNewBot() {
   const botName = await vscode.window.showInputBox({
     placeHolder: "Enter the Name for the Bot. Eg: BBAdminBot",
@@ -191,14 +208,11 @@ export async function createNewBot() {
     token: botToken,
   });
 
-  if (newBot.id) {
-    vscode.window.showInformationMessage(
-      `Bot Successsfully Created: ${newBot.name}`
-    );
-    refresh("tree");
-  } else {
-    vscode.window.showErrorMessage(`Error while creating New Bot: ${botName}`);
-  }
+  showInformationAndRefressTreeOnSuccess(
+    newBot.id, 
+    `Bot Successsfully Created: ${newBot.name}`,
+    `Error while creating New Bot: ${botName}`
+  );
 }
 
 export async function installBot() {
@@ -229,14 +243,11 @@ export async function installBot() {
 
   let installed = await apiPost(`bots/installed`, { id: result.id });
 
-  if (installed) {
-    vscode.window.showInformationMessage(`Bot Installed: ${result.label}`);
-    refresh("tree");
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while installing the Bot:  ${result.label}`
-    );
-  }
+  showInformationAndRefressTreeOnSuccess(
+    installed,
+    `Bot Installed: ${result.label}`,
+    `Error while installing the Bot:  ${result.label}`
+  );
 }
 
 export async function updateStatus(element: BotNode, status: String) {
@@ -248,14 +259,9 @@ export async function updateStatus(element: BotNode, status: String) {
     status: status === "start" ? "start_launch" : "start_stopping",
   });
 
-  if (newStatus.id) {
-    vscode.window.showInformationMessage(
-      `Bot ${status === "start" ? "Started" : "Stopped"}: ${newStatus.name}`
-    );
-    refresh("tree");
-    return;
-  } 
-  vscode.window.showErrorMessage(
+  showInformationAndRefressTreeOnSuccess(
+    newStatus.id,
+    `Bot ${status === "start" ? "Started" : "Stopped"}: ${newStatus.name}`,
     `Error while ${status === "start" ? "starting" : "stopping"} Bot: ${
       element.bot.name
     }`
@@ -294,13 +300,11 @@ export async function installLib(element: LibTree | undefined) {
     lib_id: String(result.id),
   });
 
-  if (installed) {
-    vscode.window.showInformationMessage(`Lib Installed: ${result.label}`);
-    refresh("libTree", element);
-    return;
-  }
-  vscode.window.showErrorMessage(
-    `Error while installing the Lib: ${result.label}`
+  showInformationAndRefressTreeOnSuccess(
+    installed,
+    `Lib Installed: ${result.label}`,
+    `Error while installing the Lib: ${result.label}`,
+    "libTree"
   );
 }
 
@@ -317,15 +321,12 @@ export async function uninstallLib(element: LibTreeItem) {
   }
 
   let deleted = await apiDelete(`bots/${bot.id}/libs/${element.lib.id}`);
-  if (deleted) {
-    vscode.window.showInformationMessage(
-      `Lib Uninstalled: ${element.lib.name}`
-    );
-    refresh("libTree", element);
-    return;
-  }
-  vscode.window.showErrorMessage(
-    `Error while uninstalling Lib: ${element.lib.name}`
+
+  showInformationAndRefressTreeOnSuccess(
+    deleted,
+    `Lib Uninstalled: ${element.lib.name}`,
+    `Error while uninstalling Lib: ${element.lib.name}`,
+    "libTree"
   );
 }
 
@@ -352,15 +353,12 @@ export async function createCommand(
 
   let newCmd = await apiPost(`bots/${bot.id}/commands`, command);
 
-  if (newCmd.id) {
-    vscode.window.showInformationMessage(
-      `Command Successsfully Created: ${newCmd.command}`
-    );
-    refresh("commandTree", element);
-    return;
-  }
-  vscode.window.showErrorMessage(
-    `Error while creating new command: ${cmdName}`
+  showInformationAndRefressTreeOnSuccess(
+    newCmd.id,
+    `Command Successsfully Created: ${newCmd.command}`,
+    `Error while creating new command: ${cmdName}`,
+    "commandTree",
+    element
   );
 }
 
@@ -381,16 +379,13 @@ export async function createFolder(element: CommandTree | undefined) {
     title: folderName,
   });
 
-  if (newFolder.id) {
-    vscode.window.showInformationMessage(
-      `Folder Successsfully Created: ${newFolder.title}`
-    );
-    refresh("commandTree", element);
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while creating New Folder: ${folderName}`
-    );
-  }
+  showInformationAndRefressTreeOnSuccess(
+    newFolder.id,
+    `Folder Successsfully Created: ${newFolder.title}`,
+    `Error while creating New Folder: ${folderName}`,
+    "commandTree",
+    element
+  );
 }
 
 export async function viewCommand(element: CommandTreeItem) {
@@ -440,17 +435,12 @@ export async function deleteItem(
   }
 
   const deleted = await apiDelete(String(deleteUrl));
-  if (deleted) {
-    vscode.window.showInformationMessage(
-      `Deleted: ${itemType} ${element.label}`
-    );
-    if (element instanceof BotNode) {
-      return refresh("tree");
-    }
-    refresh("commandTree", element);
-  } else {
-    vscode.window.showErrorMessage(
-      `Error while deleting ${itemType}: ${element.label}`
-    );
-  }
+
+  showInformationAndRefressTreeOnSuccess(
+    deleted,
+    `Deleted: ${itemType} ${element.label}`,
+    `Error while deleting ${itemType}: ${element.label}`,
+    "commandTree",
+    element
+  );
 }
