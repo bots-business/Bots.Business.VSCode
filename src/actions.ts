@@ -4,7 +4,7 @@ import { saveCommandToFile } from "./bbfolder";
 import { getCommandViewPage } from "./webPage";
 import { BotNode, getBot, getBotNode, MenuItemTypes } from "./tree/bot-node";
 import { LibTree, CommandTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
-
+import { refreshTree } from "./tree/tree";
 
 async function pickBot(placeHolderText?: string){
   //If not got then ask for the Bot
@@ -30,44 +30,6 @@ async function getBotOrPickBot(element?: MenuItemTypes, placeHolderText?: string
   }
  
   return await pickBot(placeHolderText);
-}
-
-async function refresh(
-  node: "tree" | "botTree" | "commandTree" | "libTree",
-  element?: MenuItemTypes
-) {
-  let item;
-
-  if ((element)&&(node === "botTree")) {
-    item = getBotNode(element);
-  }
-
-  if (node === "commandTree") {
-    if (element instanceof CommandTree) {
-      item = element;
-    } else if (element instanceof FolderTreeItem) {
-      item = element.parent;
-    } else if (element instanceof CommandTreeItem) {
-      if (element.parent instanceof FolderTreeItem) {
-        item = element.parent.parent;
-      }
-      if (element.parent instanceof CommandTree) {
-        item = element.parent;
-      }
-    }
-  }
-
-  if (node === "libTree") {
-    if (element instanceof LibTree) {
-      item = element;
-    } else if (element instanceof LibTreeItem) {
-      item = element.parent;
-    }
-  }
-
-  if(!item){ return; }
-
-  vscode.commands.executeCommand("BB:refresh", item);
 }
 
 export async function openCode(command: any) {
@@ -191,8 +153,8 @@ function showInformationAndRefressTreeOnSuccess(
   }
   vscode.window.showInformationMessage(message);
   if(!tree){ tree = "tree"; }
-  if(element){ refresh(tree, element); return; }
-  refresh(tree);
+  if(element){ refreshTree(tree, element); return; }
+  refreshTree(tree);
 }
 
 export async function createNewBot() {
