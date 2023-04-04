@@ -2,7 +2,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 import * as vscode from "vscode";
 import { saveCommandToFile } from "./bbfolder";
 import { getCommandViewPage } from "./webPage";
-import { BotNode, getBot, getBotNode, MenuItemTypes } from "./tree/bot-node";
+import { BotNode, getBot, MenuItemTypes } from "./tree/bot-node";
 import {
   LibTree,
   CommandTree,
@@ -10,24 +10,7 @@ import {
   CommandTreeItem,
   LibTreeItem,
 } from "./tree/sub-nodes";
-import { refreshTree } from "./tree/tree";
-
-async function pickBot(placeHolderText?: string) {
-  //If not got then ask for the Bot
-  let bots = (await apiGet(`bots`)) || [];
-  let items = bots.map((bot: any) => {
-    return {
-      bot: bot,
-      label: bot.name,
-    };
-  });
-  let result: any = await vscode.window.showQuickPick(items, {
-    title: "Select The Bot",
-    placeHolder: placeHolderText || "",
-    canPickMany: false,
-  });
-  return result.bot;
-}
+import { showConfirmationDialog, pickBot, showInformationAndRefressTreeOnSuccess, showQuickPickDialog } from "./dialogs";
 
 async function getBotOrPickBot(
   element?: MenuItemTypes,
@@ -139,40 +122,6 @@ export async function dropHandler(target: any, bbCommand: any) {
   );
 }
 
-async function showConfirmationDialog(warning: string) {
-  const result = await vscode.window.showWarningMessage(
-    warning,
-    { modal: true },
-    "Yes",
-    "No"
-  );
-
-  // return true if result YES
-  return result === "Yes";
-}
-
-function showInformationAndRefressTreeOnSuccess(
-  success: boolean,
-  message: string,
-  errMessage: string,
-  tree?: "tree" | "botTree" | "commandTree" | "libTree",
-  element?: BotNode | CommandTree | FolderTreeItem | CommandTreeItem
-) {
-  if (!success) {
-    vscode.window.showErrorMessage(errMessage);
-    return;
-  }
-  vscode.window.showInformationMessage(message);
-  if (!tree) {
-    tree = "tree";
-  }
-  if (element) {
-    refreshTree(tree, element);
-    return;
-  }
-  refreshTree(tree);
-}
-
 export async function createNewBot() {
   const botName = await vscode.window.showInputBox({
     placeHolder: "Enter the Name for the Bot. Eg: BBAdminBot",
@@ -205,29 +154,14 @@ export async function createNewBot() {
 
 export async function installBot() {
   let collections = (await apiGet(`store/collections/`)) || [];
-  let items = collections.map((collection: any) => {
-    return {
-      id: collection.id,
-      label: collection.title,
-      detail: collection.description,
-    };
-  });
-  let result: any = await vscode.window.showQuickPick(items, {
-    canPickMany: false,
-  });
-  if (!result) {
-    return;
-  }
+
+  let result = await showQuickPickDialog(collections, {id: 'id', label: 'title', detail: 'description'});
+  if(!result){ return }
 
   let bots = (await apiGet(`store/collections/${result.id}/bots`)) || [];
-  items = bots.map((bot: any) => {
-    return {
-      id: bot.id,
-      label: bot.name,
-      detail: bot.description,
-    };
-  });
-  result = await vscode.window.showQuickPick(items, { canPickMany: false });
+
+  result = await showQuickPickDialog(bots, {id: 'id', label: 'name', detail: 'description'});
+  if(!result){ return }
 
   let installed = await apiPost(`bots/installed`, { id: result.id });
 
@@ -270,19 +204,9 @@ export async function installLib(element: LibTree | undefined) {
     "Select the Bot in which you want to install Libs"
   );
   let libs = (await apiGet(`store/libs/`)) || [];
-  let items = libs.map((lib: any) => {
-    return {
-      id: lib.id,
-      label: lib.name,
-      detail: lib.description,
-    };
-  });
-  const result: any = await vscode.window.showQuickPick(items, {
-    canPickMany: false,
-  });
-  if (!result) {
-    return;
-  }
+
+  let result = await showQuickPickDialog(libs, {id: 'id', label: 'name', detail: 'description'})
+  if(!result){ return }
 
   let installed = await apiPost(`bots/${bot.id}/libs/`, {
     lib_id: String(result.id),
