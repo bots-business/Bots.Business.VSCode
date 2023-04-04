@@ -3,10 +3,16 @@ import * as vscode from "vscode";
 import { saveCommandToFile } from "./bbfolder";
 import { getCommandViewPage } from "./webPage";
 import { BotNode, getBot, getBotNode, MenuItemTypes } from "./tree/bot-node";
-import { LibTree, CommandTree, FolderTreeItem, CommandTreeItem, LibTreeItem } from "./tree/sub-nodes";
+import {
+  LibTree,
+  CommandTree,
+  FolderTreeItem,
+  CommandTreeItem,
+  LibTreeItem,
+} from "./tree/sub-nodes";
 import { refreshTree } from "./tree/tree";
 
-async function pickBot(placeHolderText?: string){
+async function pickBot(placeHolderText?: string) {
   //If not got then ask for the Bot
   let bots = (await apiGet(`bots`)) || [];
   let items = bots.map((bot: any) => {
@@ -23,12 +29,17 @@ async function pickBot(placeHolderText?: string){
   return result.bot;
 }
 
-async function getBotOrPickBot(element?: MenuItemTypes, placeHolderText?: string){
-  if(element){
+async function getBotOrPickBot(
+  element?: MenuItemTypes,
+  placeHolderText?: string
+) {
+  if (element) {
     let bot = getBot(element);
-    if(bot){ return bot; }
+    if (bot) {
+      return bot;
+    }
   }
- 
+
   return await pickBot(placeHolderText);
 }
 
@@ -110,7 +121,7 @@ export async function dropHandler(target: any, bbCommand: any) {
     return;
   }
 
-  if(!showConfirmationDialog(warningStatement)){
+  if (!showConfirmationDialog(warningStatement)) {
     return;
   }
 
@@ -128,7 +139,7 @@ export async function dropHandler(target: any, bbCommand: any) {
   );
 }
 
-async function showConfirmationDialog(warning: string){
+async function showConfirmationDialog(warning: string) {
   const result = await vscode.window.showWarningMessage(
     warning,
     { modal: true },
@@ -141,19 +152,24 @@ async function showConfirmationDialog(warning: string){
 }
 
 function showInformationAndRefressTreeOnSuccess(
-  success:boolean, 
-  message:string, 
-  errMessage:string, 
+  success: boolean,
+  message: string,
+  errMessage: string,
   tree?: "tree" | "botTree" | "commandTree" | "libTree",
   element?: BotNode | CommandTree | FolderTreeItem | CommandTreeItem
-){
+) {
   if (!success) {
     vscode.window.showErrorMessage(errMessage);
     return;
   }
   vscode.window.showInformationMessage(message);
-  if(!tree){ tree = "tree"; }
-  if(element){ refreshTree(tree, element); return; }
+  if (!tree) {
+    tree = "tree";
+  }
+  if (element) {
+    refreshTree(tree, element);
+    return;
+  }
   refreshTree(tree);
 }
 
@@ -162,7 +178,9 @@ export async function createNewBot() {
     placeHolder: "Enter the Name for the Bot. Eg: BBAdminBot",
   });
 
-  if(!botName){ return; }
+  if (!botName) {
+    return;
+  }
 
   const botToken = await vscode.window.showInputBox({
     placeHolder:
@@ -179,7 +197,7 @@ export async function createNewBot() {
   });
 
   showInformationAndRefressTreeOnSuccess(
-    newBot.id, 
+    newBot.id,
     `Bot Successsfully Created: ${newBot.name}`,
     `Error while creating New Bot: ${botName}`
   );
@@ -281,7 +299,11 @@ export async function installLib(element: LibTree | undefined) {
 export async function uninstallLib(element: LibTreeItem) {
   let bot: any = await getBotOrPickBot(element);
 
-  if(!showConfirmationDialog(`Are you sure you want to uninstall Lib ${element.label}?`)){
+  if (
+    !showConfirmationDialog(
+      `Are you sure you want to uninstall Lib ${element.label}?`
+    )
+  ) {
     return;
   }
 
@@ -389,7 +411,11 @@ export async function deleteItem(
     deleteUrl = `bots/${bot.id}/commands/${element.bbCommand.id}`;
   }
 
-  if(!showConfirmationDialog(`Are you sure you want to delete ${itemType} ${element.label}?`)){
+  if (
+    !showConfirmationDialog(
+      `Are you sure you want to delete ${itemType} ${element.label}?`
+    )
+  ) {
     return;
   }
 
