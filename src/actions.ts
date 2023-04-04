@@ -161,12 +161,15 @@ export async function createNewBot() {
   const botName = await vscode.window.showInputBox({
     placeHolder: "Enter the Name for the Bot. Eg: BBAdminBot",
   });
+
+  if(!botName){ return; }
+
   const botToken = await vscode.window.showInputBox({
     placeHolder:
       "Enter the Bot Token. Eg: 391686724:AAG6XGW0Z9NtfZwqEuWkkno_Eri932cX0Hg",
   });
 
-  if (!botName || !botToken) {
+  if (!botToken) {
     return;
   }
 
