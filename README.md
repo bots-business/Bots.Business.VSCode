@@ -5,6 +5,8 @@ Use this extension for quickly bot development with Bots.Business!
 ## Features
 
 ![BB Bots List in VS Code](https://raw.githubusercontent.com/bots-business/Bots.Business.VSCode/main/images/main.png)
+![BB Command Page in VS Code](https://raw.githubusercontent.com/bots-business/Bots.Business.VSCode/main/images/commandPage.png)
+
 
 > Tip: you can load code for any commands and edit it!
 
@@ -28,6 +30,17 @@ See Extensions item and Bots.Business section.
 
 Then you can fill BB Api Key in settings.json: "bots-business.apiKey" field.
 
+## Commands
+
+### Use Ctrl+Shift+P to use the commands
+
+1. BB:login : Login to BB account
+2. BB:refresh : Refresh BB tree
+3. BB:newBot : Create New Bot
+4. BB:installBot : Install New Bot from store
+5. BB:installLib : Install Lib in Bot
+6. BB:newCommand : Create New Command
+7. BB.createFolder : Create New Folder
 
 ## Known Issues
 

@@ -58,15 +58,17 @@ export class CommandTreeItem extends vscode.TreeItem {
     public parent: CommandTree | FolderTreeItem
   ) {
     super(bbCommand.command);
-    this.tooltip =
-      "📃 " +
-      (bbCommand.answer || "no") +
-      "\n⌨️ " +
-      (bbCommand.keyboard || "no") +
-      "\n❓" +
-      (bbCommand.need_reply || "no") +
-      "\n⏱️ " +
-      (bbCommand.auto_retry_time || "no");
+    //No need as we have view Command
+
+    // this.tooltip =
+    //   "📃 " +
+    //   (bbCommand.answer || "no") +
+    //   "\n⌨️ " +
+    //   (bbCommand.keyboard || "no") +
+    //   "\n❓" +
+    //   (bbCommand.need_reply || "no") +
+    //   "\n⏱️ " +
+    //   (bbCommand.auto_retry_time || "no");
     this.contextValue = "command";
   }
 }

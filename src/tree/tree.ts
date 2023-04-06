@@ -64,7 +64,5 @@ export async function refreshTree(
     }
   }
 
-  if(!item){ return; }
-
   vscode.commands.executeCommand("BB:refresh", item);
 }

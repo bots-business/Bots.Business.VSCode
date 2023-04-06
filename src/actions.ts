@@ -349,7 +349,7 @@ export async function deleteItem(
     deleted,
     `Deleted: ${itemType} ${element.label}`,
     `Error while deleting ${itemType}: ${element.label}`,
-    "commandTree",
+    (element instanceof BotNode)? "tree" : "commandTree",
     element
   );
 }
