@@ -31,40 +31,38 @@ export function getBBTreeView(bots: any[]) {
   return { tree, botTreeDataProvider };
 }
 
+function getRefreshedElement(
+  node: "tree" | "botTree" | "commandTree" | "libTree",
+  element?: MenuItemTypes
+){
+  if ((element)&&(node === "botTree")) {
+    return getBotNode(element);
+  }
+
+  const libsOrCommands = (element instanceof LibTree) || (element instanceof CommandTree);
+  if (libsOrCommands) {
+    return element;
+  }
+
+  const libOrFolder = (element instanceof LibTreeItem) || (element instanceof FolderTreeItem);
+  if (libOrFolder) {
+    return element.parent;
+  }
+
+  if (element instanceof CommandTreeItem) {
+    if (element.parent instanceof FolderTreeItem) {
+      return element.parent.parent;
+    }
+    if (element.parent instanceof CommandTree) {
+      return element.parent;
+    }
+  }
+}
+
 export async function refreshTree(
   node: "tree" | "botTree" | "commandTree" | "libTree",
   element?: MenuItemTypes
 ) {
-  let item;
-
-  if ((element)&&(node === "botTree")) {
-    item = getBotNode(element);
-  }
-
-  if (node === "commandTree") {
-    if (element instanceof CommandTree) {
-      item = element;
-    } else if (element instanceof FolderTreeItem) {
-      item = element.parent;
-    } else if (element instanceof CommandTreeItem) {
-      if (element.parent instanceof FolderTreeItem) {
-        item = element.parent.parent;
-      }
-      if (element.parent instanceof CommandTree) {
-        item = element.parent;
-      }
-    }
-  }
-
-  if (node === "libTree") {
-    if (element instanceof LibTree) {
-      item = element;
-    } else if (element instanceof LibTreeItem) {
-      item = element.parent;
-    }
-  }
-
-  if(!item){ return; }
-
-  vscode.commands.executeCommand("BB:refresh", item);
+  let refreshedEl = getRefreshedElement(node, element);
+  vscode.commands.executeCommand("BB:refresh", refreshedEl);
 }
