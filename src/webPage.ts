@@ -112,7 +112,7 @@ export function getCommandViewPage(command:any){
         <input type="text" id="command" name="command" value="${command.command}" disabled>
     
         <label for="answer">Answer:</label>
-        <textarea id="answer" name="answer" value="${command.answer||""}" disabled></textarea>
+        <textarea id="answer" name="answer" disabled>${command.answer||""}</textarea>
 
         <label for="aliases">Aliases:</label>
         <input type="text" id="aliases" name="aliases" value="${(command.aliases.map((aliases:any) => aliases.command)).join(', ')}" disabled>

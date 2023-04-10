@@ -29,9 +29,21 @@ See Extensions item and Bots.Business section.
 Then you can fill BB Api Key in settings.json: "bots-business.apiKey" field.
 
 
-## Known Issues
+## Commands
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### Use Ctrl+Shift+P to use the commands
+
+1. BB:login : Login to BB account
+2. BB:refresh : Refresh BB tree
+3. BB:newBot : Create New Bot
+4. BB:installBot : Install New Bot from store
+5. BB:installLib : Install Lib in Bot
+6. BB:newCommand : Create New Command
+7. BB.createFolder : Create New Folder
+
+
+## Known Issues
+n/a
 
 ## Release Notes
 Please see: [CHANGELOG.md](https://github.com/bots-business/Bots.Business.VSCode/blob/main/CHANGELOG.md)
