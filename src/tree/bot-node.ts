@@ -46,25 +46,12 @@ export class BotNode extends vscode.TreeItem {
 }
 
 export function getBotNode(element: MenuItemTypes) {
-  if (element instanceof BotNode) {
-    return element;
-  }
-  if ((element instanceof LibTree)||
-      (element instanceof CommandTree)||
-      (element instanceof ErrorTree)) {
-    return element.parent;
-  }
-  if ((element instanceof LibTreeItem)||
-     (element instanceof CommandTreeItem)) {
-    return element.parent.parent;
-  }
-  const isCommandTreeItem = (element instanceof CommandTreeItem);
-  if (!isCommandTreeItem) { return; }
-  if (element.parent instanceof FolderTreeItem) {
-    return element.parent.parent.parent;
-  }
-  if (element.parent instanceof CommandTree) {
-    return element.parent.parent;
+  for (let i = 0; i < 4; i++) {
+    if(element instanceof BotNode) {
+      return element;
+    }
+    element = element.parent;
+    // deep to element.parent.parent.parent
   }
 }
 
