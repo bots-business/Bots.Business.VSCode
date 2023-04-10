@@ -145,6 +145,11 @@
           "group": "inline"
         },
         {
+          "command": "BB.newCommand",
+          "when": "view == botTreeView && viewItem =~ /^(tree-command|folder)/",
+          "group": "navigation"
+        },
+        {
           "command": "BB.createFolder",
           "when": "view == botTreeView && viewItem =~ /^(tree-command)/",
           "group": "navigation"
@@ -166,12 +171,12 @@
         },
         {
           "command": "BB.startBot",
-          "when": "view == botTreeView && viewItem == bot.off",
+          "when": "view == botTreeView && viewItem =~ /^(bot)/",
           "group": "navigation"
         },
         {
           "command": "BB.stopBot",
-          "when": "view == botTreeView && viewItem == bot.works",
+          "when": "view == botTreeView && viewItem =~ /^(bot)/",
           "group": "navigation"
         },
         {
