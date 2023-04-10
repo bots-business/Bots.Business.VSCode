@@ -156,12 +156,12 @@ export async function installBot() {
   let collections = (await apiGet(`store/collections/`)) || [];
 
   let result = await showQuickPickDialog(collections, {id: 'id', label: 'title', detail: 'description'});
-  if(!result){ return }
+  if(!result){ return; }
 
   let bots = (await apiGet(`store/collections/${result.id}/bots`)) || [];
 
   result = await showQuickPickDialog(bots, {id: 'id', label: 'name', detail: 'description'});
-  if(!result){ return }
+  if(!result){ return; }
 
   let installed = await apiPost(`bots/installed`, { id: result.id });
 
@@ -205,11 +205,11 @@ export async function installLib(element: LibTree | undefined) {
   );
   let libs = (await apiGet(`store/libs/`)) || [];
 
-  let result = await showQuickPickDialog(libs, {id: 'id', label: 'name', detail: 'description'})
-  if(!result){ return }
+  let result = await showQuickPickDialog(libs, {id: 'id', label: 'name', detail: 'description'});
+  if(!result){ return; }
 
   let installed = await apiPost(`bots/${bot.id}/libs/`, {
-    lib_id: String(result.id),
+    lib_id: String(result.id)
   });
 
   showInformationAndRefressTreeOnSuccess(
@@ -223,11 +223,9 @@ export async function installLib(element: LibTree | undefined) {
 export async function uninstallLib(element: LibTreeItem) {
   let bot: any = await getBotOrPickBot(element);
 
-  if (
-    !showConfirmationDialog(
-      `Are you sure you want to uninstall Lib ${element.label}?`
-    )
-  ) {
+  const confirmed = await showConfirmationDialog(`Are you sure you want to uninstall Lib ${element.label}?`);
+
+  if (!confirmed){
     return;
   }
 
@@ -335,11 +333,9 @@ export async function deleteItem(
     deleteUrl = `bots/${bot.id}/commands/${element.bbCommand.id}`;
   }
 
-  if (
-    !showConfirmationDialog(
-      `Are you sure you want to delete ${itemType} ${element.label}?`
-    )
-  ) {
+  const confirmed = await showConfirmationDialog(`Do you want to delete ${itemType} "${element.label}?"`);
+
+  if (!confirmed) {
     return;
   }
 
@@ -347,7 +343,7 @@ export async function deleteItem(
 
   showInformationAndRefressTreeOnSuccess(
     deleted,
-    `Deleted: ${itemType} ${element.label}`,
+    `Deleted: ${itemType} "${element.label}"`,
     `Error while deleting ${itemType}: ${element.label}`,
     "commandTree",
     element
