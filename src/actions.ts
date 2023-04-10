@@ -101,6 +101,10 @@ export async function updateStatus(element: BotNode, status: String) {
   if (!element) {
     return;
   }
+  if(!bot.token&&status==="start"){
+    vscode.window.showErrorMessage(`Bot ${bot.name} has no token. Please add a token to start the bot.`);
+    return;
+  }
   let newStatus = await apiPost(`bots/${bot.id}/status`, {
     status: status === "start" ? "start_launch" : "start_stopping",
   });

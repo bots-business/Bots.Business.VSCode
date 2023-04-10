@@ -11,7 +11,6 @@ import {
 } from "./bbfolder";
 import {
   createNewBot,
-  updateStatus,
   createCommand,
   createFolder,
   deleteItem,
@@ -19,6 +18,8 @@ import {
   uninstallLib,
   installBot,
   viewCommand,
+  startBot,
+  stopBot,
 } from "./actions";
 
 var vsContext: vscode.ExtensionContext;
@@ -127,13 +128,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("BB.startBot", async (item: any) => {
-      updateStatus(item, "start");
+      startBot(item);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("BB.stopBot", async (item: any) => {
-      updateStatus(item, "stop");
+      stopBot(item);
     })
   );
 
