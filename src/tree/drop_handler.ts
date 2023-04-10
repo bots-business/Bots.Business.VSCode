@@ -66,13 +66,13 @@ export async function dropHandler(target: any, bbCommand: any) {
   else if(dropToFolderTree(target, bbCommand)){
     //now remaining condition is commannd comes from no folder/any other to the target folder
     bbCommand.commands_folder_id = target.folder.id;
-    warningStatement = " to ${target.folder.title} Folder";
+    warningStatement = ` to "${target.folder.title}" Folder`;
   }
 
   else { return; }
 
   const confirmed = await showConfirmationDialog(
-    `Do u want to move Command: ${bbCommand.command} ` + warningStatement
+    `Do u want to move Command: "${bbCommand.command}" ` + warningStatement + "?"
   );
 
   if (!confirmed) {
