@@ -48,11 +48,7 @@ export function showInformationAndRefressTreeOnSuccess(
   if (!tree) {
     tree = "tree";
   }
-  if (element) {
-    refreshTree(tree, element);
-    return;
-  }
-  refreshTree(tree);
+  refreshTree(tree, element);
 }
 
 export async function showQuickPickDialog(collections: Array<any>, attributes: any){
