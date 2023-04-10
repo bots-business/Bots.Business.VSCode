@@ -1,6 +1,6 @@
 # Bots.Business VS Code Extension
 
-Use this extension for quickly bot development with Bots.Business!
+Use this extension for quickly bot development with [Bots.Business](https://bots.business)!
 
 ## Features
 
@@ -43,7 +43,7 @@ Then you can fill BB Api Key in settings.json: "bots-business.apiKey" field.
 
 
 ## Known Issues
-n/a
+- Bot errors not works (not developed yet)
 
 ## Release Notes
 Please see: [CHANGELOG.md](https://github.com/bots-business/Bots.Business.VSCode/blob/main/CHANGELOG.md)

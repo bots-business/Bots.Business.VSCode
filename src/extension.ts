@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     {}
   );
 
-  panel.webview.html = "<h1>Bots.Business VS Code extension</h1>";
+  panel.webview.html = "<h1>Bots.Business</h1><h2>VS Code extension</h2>";
 
   context.subscriptions.push(panel);
 
