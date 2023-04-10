@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { dropHandler } from "../actions";
 import { apiGet } from "../api";
 import { BotNode } from "./bot-node";
+import { dropHandler } from "./drop_handler";
 import { LibTree, CommandTree, ErrorTree, LibTreeItem, FolderTreeItem, CommandTreeItem } from "./sub-nodes";
 
 export class BotTreeDataProvider
