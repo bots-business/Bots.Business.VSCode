@@ -71,8 +71,7 @@ export class BotTreeDataProvider
 
   public async handleDrop(
     target: any,
-    sources: vscode.DataTransfer,
-    token: vscode.CancellationToken
+    sources: vscode.DataTransfer
   ): Promise<void> {
     const bbCommand = sources.get(
       "application/vnd.code.tree.botTreeView"
@@ -85,8 +84,7 @@ export class BotTreeDataProvider
 
   public async handleDrag(
     source: BotNode[],
-    dataTransfer: vscode.DataTransfer,
-    token: vscode.CancellationToken
+    dataTransfer: vscode.DataTransfer
   ): Promise<void> {
     if (source[0] instanceof CommandTreeItem) {
       dataTransfer.set(
