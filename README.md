@@ -55,6 +55,8 @@ See: https://github.com/bots-business/Bots.Business.VSCode
 Just make clone:
 `git@github.com:bots-business/Bots.Business.VSCode.git`
 
+use `npm install`
+
 then press F5 for debugging
 
 ### Publishing
